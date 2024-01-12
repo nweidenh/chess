@@ -7,9 +7,10 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    ChessPiece [][] Board;
 
     public ChessBoard() {
-        
+        ChessPiece [] [] Board = new ChessPiece[8] [8];
     }
 
     /**
@@ -19,7 +20,9 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        /* throw new RuntimeException("Not implemented") */;
+        this.Board[position.row][position.col] = piece;
+
     }
 
     /**
