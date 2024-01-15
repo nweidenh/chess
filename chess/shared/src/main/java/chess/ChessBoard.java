@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,10 +9,10 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ChessPiece [][] Board;
+    ChessPiece [][] Board = new ChessPiece[9][9];
 
     public ChessBoard() {
-        ChessPiece [] [] Board = new ChessPiece[8] [8];
+        //ChessPiece [][] Board = new ChessPiece[8][8];
     }
 
     /**
@@ -20,7 +22,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        /* throw new RuntimeException("Not implemented") */;
+        /* throw new RuntimeException("Not implemented") */
         this.Board[position.row][position.col] = piece;
 
     }
@@ -33,7 +35,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        //throw new RuntimeException("Not implemented")
+        return this.Board[position.row][position.col];
     }
 
     /**
@@ -41,6 +44,14 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        //throw new RuntimeException("Not implemented");
+        this.Board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+    }
+
+    public String toString(){
+        String retString = "";
+        for(int col = 0; col < Board.length; col++)
+            retString += Arrays.deepToString(this.Board) + "/n";
+        return retString;
     }
 }
