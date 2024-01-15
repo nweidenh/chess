@@ -54,4 +54,9 @@ public class ChessBoard {
             retString += Arrays.deepToString(this.Board) + "/n";
         return retString;
     }
+
+    public static void Main(){
+        ChessBoard testBoard = new ChessBoard();
+        System.out.println(testBoard.toString());
+    }
 }
