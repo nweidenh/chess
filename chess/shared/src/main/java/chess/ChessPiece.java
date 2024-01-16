@@ -1,6 +1,9 @@
 package chess;
 
+import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -55,6 +58,186 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        //Bishops Move Collection
+        if (board.getPiece(myPosition).getPieceType() == PieceType.BISHOP) {
+            ArrayList<ChessMove> bishops = new ArrayList<ChessMove>();
+            int column = myPosition.getColumn();
+            for (int i = myPosition.getRow(); i < 8; i++) {
+                if (column > 1 && column < 8) {
+                    ChessPosition endPos = new ChessPosition(i + 1, column + 1);
+                    ChessMove move = new ChessMove(myPosition, endPos, null);
+                    if (board.getPiece(endPos) == null) {
+                        bishops.add(move);
+                    } else if (sameTeam(board, endPos)) {
+                        break;
+                    } else {
+                        bishops.add(move);
+                        break;
+                    }
+                    column++;
+                }
+            }
+            column = colReset(myPosition);
+            for (int i = myPosition.getRow(); i > 1; i--) {
+                if (column > 1 && column < 8) {
+                    ChessPosition endPos = new ChessPosition(i - 1, column + 1);
+                    ChessMove move = new ChessMove(myPosition, endPos, null);
+                    if (board.getPiece(endPos) == null) {
+                        bishops.add(move);
+                    } else if (sameTeam(board, endPos)) {
+                        break;
+                    } else {
+                        bishops.add(move);
+                        break;
+                    }
+                    column++;
+                }
+            }
+            column = colReset(myPosition);
+            for (int i = myPosition.getRow(); i > 1; i--) {
+                if (column > 1 && column < 8) {
+                    ChessPosition endPos = new ChessPosition(i - 1, column - 1);
+                    ChessMove move = new ChessMove(myPosition, endPos, null);
+                    if (board.getPiece(endPos) == null) {
+                        bishops.add(move);
+                    } else if (sameTeam(board, endPos)) {
+                        break;
+                    } else {
+                        bishops.add(move);
+                        break;
+                    }
+                    column--;
+                }
+            }
+            column = colReset(myPosition);
+            for (int i = myPosition.getRow(); i < 8; i++) {
+                if (column > 1 && column < 8) {
+                    ChessPosition endPos = new ChessPosition(i + 1, column - 1);
+                    ChessMove move = new ChessMove(myPosition, endPos, null);
+                    if (board.getPiece(endPos) == null) {
+                        bishops.add(move);
+                    } else if (sameTeam(board, endPos)) {
+                        break;
+                    } else {
+                        bishops.add(move);
+                        break;
+                    }
+                    column--;
+                }
+            }
+            return bishops;
+        }
+
+        //King Move Collection
+        if (board.getPiece(myPosition).getPieceType() == PieceType.KING) {
+            ArrayList<ChessMove> kings = new ArrayList<ChessMove>();
+            int column = myPosition.getColumn();
+            int row = myPosition.getRow();
+            //Vertical + 1
+            if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row + 1, column);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                }
+            } //Diagnol Up Right
+            if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row + 1, column + 1);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                }
+            } // Right
+            if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row, column + 1);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                }
+            } // Diagnol Down Right
+            if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row - 1, column + 1);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                }
+            } // Down
+            if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row - 1, column);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                }
+            } // Diagnol Down Left
+            if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row -1, column -1);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                } //Left
+            }if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row , column-1);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                } // Diagnol Left Up
+            }if (column > 1 && column < 8 && row > 1 && row < 8) {
+                ChessPosition endPos = new ChessPosition(row + 1, column - 1);
+                ChessMove move = new ChessMove(myPosition, endPos, null);
+                if (board.getPiece(endPos) == null) {
+                    kings.add(move);
+                } else if (sameTeam(board, endPos)) {
+                } else {
+                    kings.add(move);
+                }
+            }
+            return kings;
+        }
+        return null;
+    }
+
+    public boolean sameTeam(ChessBoard board, ChessPosition position) {
+        boolean result = false;
+        if (board.getPiece(position).getTeamColor() == pColor){
+            result = true;
+        }
+        return result;
+    }
+
+    public int colReset(ChessPosition position){
+        int col = position.getColumn();
+        return col;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessPiece that)) return false;
+        return pColor == that.pColor && pType == that.pType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pColor, pType);
     }
 }

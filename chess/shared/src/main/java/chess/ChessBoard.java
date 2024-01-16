@@ -9,9 +9,10 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ChessPiece [][] Board = new ChessPiece[9][9];
+    private ChessPiece [][] BoardSquares = new ChessPiece[8][8];
 
     public ChessBoard() {
+
         //ChessPiece [][] Board = new ChessPiece[8][8];
     }
 
@@ -23,7 +24,7 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         /* throw new RuntimeException("Not implemented") */
-        this.Board[position.row][position.col] = piece;
+        BoardSquares[position.getRow()-1][position.getColumn()-1] = piece;
 
     }
 
@@ -36,7 +37,7 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         //throw new RuntimeException("Not implemented")
-        return this.Board[position.row][position.col];
+        return BoardSquares[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
@@ -45,13 +46,13 @@ public class ChessBoard {
      */
     public void resetBoard() {
         //throw new RuntimeException("Not implemented");
-        this.Board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        BoardSquares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
     }
 
     public String toString(){
         String retString = "";
-        for(int col = 0; col < Board.length; col++)
-            retString += Arrays.deepToString(this.Board) + "/n";
+        for(int col = 0; col < BoardSquares.length; col++)
+            retString += Arrays.deepToString(BoardSquares) + "/n";
         return retString;
     }
 
