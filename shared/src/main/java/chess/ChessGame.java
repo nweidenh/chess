@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,7 +53,20 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return this.board.getPiece(startPosition).pieceMoves(board, startPosition);
+        HashSet<ChessMove> possibleMoves = new HashSet<>(this.board.getPiece(startPosition).pieceMoves(this.board, startPosition));
+        for(ChessMove move : possibleMoves) {
+            ChessBoard boardCopy = new ChessBoard(board);
+            ChessBoard originalBoard = new ChessBoard(board);
+            boardCopy.addPiece(move.getEndPosition(),boardCopy.getPiece(startPosition));
+            boardCopy.removePiece(startPosition);
+            setBoard(boardCopy);
+            boardCopy.getPiece(move.getEndPosition());
+            if(isInCheck(boardCopy.getPiece(move.getEndPosition()).getTeamColor())){
+                possibleMoves.remove(move);
+            }
+            setBoard(originalBoard);
+        }
+        return possibleMoves;
     }
 
     /**
@@ -73,6 +87,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         boolean isCheck = false;
+        ChessPosition kingSpot = GetYourKingPosition(this.getBoard(), teamColor);
         for (int i = 1; i < 9; i++){
             for (int  j = 1; j < 9; j++){
                 ChessPosition currentSpace = new ChessPosition(i, j);
@@ -81,7 +96,9 @@ public class ChessGame {
                     Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
                             this.getBoard().getPiece(currentSpace).pieceMoves(this.getBoard(), currentSpace));
                     for(ChessMove moveTest : potentialMoves){
-                        if (moveTest.getEndPosition() == GetYourKingPosition(board, teamColor)){
+                        if (moveTest.getEndPosition().equals(kingSpot)){
+//                        if (moveTest.getEndPosition().getRow() == kingSpot.getRow() &&
+//                            moveTest.getEndPosition().getColumn() == kingSpot.getColumn()){
                             isCheck = true;
                         }
                     }
@@ -98,7 +115,26 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean isCheckMate = false;
+        ChessPosition kingSpot = GetYourKingPosition(this.getBoard(), teamColor);
+        for (int i = 1; i < 9; i++){
+            for (int  j = 1; j < 9; j++){
+                ChessPosition currentSpace = new ChessPosition(i, j);
+                if(this.getBoard().getPiece(currentSpace) != null &&
+                        this.getBoard().getPiece(currentSpace).getTeamColor() != teamColor){
+                    Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
+                            this.getBoard().getPiece(currentSpace).pieceMoves(this.getBoard(), currentSpace));
+                    for(ChessMove moveTest : potentialMoves){
+                        if (moveTest.getEndPosition().equals(kingSpot)){
+//                        if (moveTest.getEndPosition().getRow() == kingSpot.getRow() &&
+//                            moveTest.getEndPosition().getColumn() == kingSpot.getColumn()){
+                            isCheckMate = true;
+                        }
+                    }
+                }
+            }
+        }
+        return isCheckMate;
     }
 
     /**
@@ -144,4 +180,18 @@ public class ChessGame {
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessGame chessGame)) return false;
+        return getTeamTurn() == chessGame.getTeamTurn() && Objects.equals(getBoard(), chessGame.getBoard());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTeamTurn(), getBoard());
+    }
+
+
 }

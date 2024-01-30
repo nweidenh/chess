@@ -670,6 +670,15 @@ public class ChessPiece {
         int row = position.getRow();
         return row;
     }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pColor=" + pColor +
+                ", pType=" + pType +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

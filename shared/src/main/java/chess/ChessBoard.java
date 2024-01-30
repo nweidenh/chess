@@ -14,6 +14,9 @@ public class ChessBoard {
     public ChessBoard() {
     }
 
+    public ChessBoard(ChessBoard that){
+        this();
+    }
     /**
      * Adds a chess piece to the chessboard
      *
@@ -22,6 +25,10 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         BoardSquares[position.getRow()-1][position.getColumn()-1] = piece;
+    }
+
+    public void removePiece(ChessPosition position){
+        BoardSquares[position.getRow()-1][position.getColumn()-1] = null;
     }
 
     /**

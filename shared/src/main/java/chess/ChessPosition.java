@@ -32,11 +32,17 @@ public class ChessPosition {
     public int getColumn() {
         return this.col;
     }
+
+    @Override
+    public String toString() {
+        return "[" + row + "," + col + ']';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ChessPosition that)) return false;
-        return getRow() == that.getRow() && col == that.col;
+        return row == that.row && col == that.col;
     }
 
     @Override
