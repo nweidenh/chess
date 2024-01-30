@@ -3,6 +3,7 @@ package chess;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -71,17 +72,23 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        for (int i = 0; i < 8; i++){
-            for (int  j = 0; j < 8; j++){
-                if(this.getBoard().getPiece(new ChessPosition(i, j)) != null){
-                    ChessPosition start = new ChessPosition(i, j);
-                    Collection<ChessMove> potentialMoves = new ArrayList<ChessMove>(this.board.getPiece(start).pieceMoves(board, start));
-                    for(int i = 0; i < potentialMoves; i++){
-
+        boolean isCheck = false;
+        for (int i = 1; i < 9; i++){
+            for (int  j = 1; j < 9; j++){
+                ChessPosition currentSpace = new ChessPosition(i, j);
+                if(this.getBoard().getPiece(currentSpace) != null &&
+                   this.getBoard().getPiece(currentSpace).getTeamColor() != teamColor){
+                    Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
+                            this.getBoard().getPiece(currentSpace).pieceMoves(this.getBoard(), currentSpace));
+                    for(ChessMove moveTest : potentialMoves){
+                        if (moveTest.getEndPosition() == GetYourKingPosition(board, teamColor)){
+                            isCheck = true;
+                        }
                     }
                 }
             }
         }
+        return isCheck;
     }
 
     /**
@@ -121,5 +128,20 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.board;
+    }
+
+    private ChessPosition GetYourKingPosition(ChessBoard board, TeamColor team){
+        ChessPosition king;
+        for (int i = 1; i < 9; i++){
+            for (int  j = 1; j < 9; j++) {
+                if(board.getPiece(new ChessPosition(i, j)) != null &&
+                   board.getPiece(new ChessPosition(i, j)).getTeamColor() == team &&
+                   board.getPiece(new ChessPosition(i, j)).getPieceType() == ChessPiece.PieceType.KING){
+                    king = new ChessPosition(i,j);
+                    return king;
+                }
+            }
+        }
+        return null;
     }
 }
