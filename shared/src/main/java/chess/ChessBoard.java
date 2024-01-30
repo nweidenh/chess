@@ -9,7 +9,7 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece [][] BoardSquares = new ChessPiece[8][8];
+    public ChessPiece [][] BoardSquares = new ChessPiece[8][8];
 
     public ChessBoard() {
     }
