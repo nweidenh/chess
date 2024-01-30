@@ -43,4 +43,6 @@ public class ChessPosition {
     public int hashCode() {
         return Objects.hash(getRow(), col);
     }
+
+
 }
