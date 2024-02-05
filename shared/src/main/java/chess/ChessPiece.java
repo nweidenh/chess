@@ -586,7 +586,7 @@ public class ChessPiece {
             }
         }
         //Down Right
-        if(column > 0 && column < 9 && row > 1 && row < 9 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK){
+        if(column > 0 && column < 8 && row > 1 && row < 9 && board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK){
             ChessPosition endPos = new ChessPosition(row - 1, column + 1);
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) != null && board.getPiece(endPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()){

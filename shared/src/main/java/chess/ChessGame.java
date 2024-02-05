@@ -17,7 +17,6 @@ public class ChessGame {
     public ChessBoard board;
 
     public ChessGame() {
-        this.teamTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
     }
 
@@ -79,7 +78,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition proposedMoveEnd = move.getEndPosition();
+        ChessPosition proposedMoveStart = move.getStartPosition();
+        ChessPiece proposedPromotion = null;
+        if (move.getPromotionPiece() != null) {
+            proposedPromotion = new ChessPiece(board.getPiece(proposedMoveStart).getTeamColor(), move.getPromotionPiece());
+        }
+        ChessPiece pieceMoving = board.getPiece(move.getStartPosition());
+        Collection<ChessMove> moveCollection = validMoves(proposedMoveStart);
+        if(!moveCollection.contains(move)){
+            throw new InvalidMoveException("Off the board move or leaves team king in Danger");
+        } else if(pieceMoving.getTeamColor() != this.getTeamTurn()){
+            throw new InvalidMoveException("Wrong team attempting to move");
+        } else{
+            if (proposedPromotion != null){
+                this.board.addPiece(proposedMoveEnd, proposedPromotion);
+            } else{
+                this.board.addPiece(proposedMoveEnd, pieceMoving);
+            }
+            this.board.removePiece(proposedMoveStart);
+            this.ChangeTeamTurn();
+        }
     }
 
     /**
@@ -148,7 +167,24 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean isStalemate = true;
+        for (int i = 1; i < 9; i++){
+            if(!isStalemate){
+                break;
+            }
+            for (int  j = 1; j < 9; j++){
+                ChessPosition currentSpace = new ChessPosition(i, j);
+                if(this.getBoard().getPiece(currentSpace) != null &&
+                   this.getBoard().getPiece(currentSpace).getTeamColor() == teamColor){
+                    Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
+                            validMoves(currentSpace));
+                    if(!potentialMoves.isEmpty()){
+                        isStalemate = false;
+                        break;
+                    }
+                }
+            }
+        } return isStalemate;
     }
 
     /**
@@ -182,6 +218,14 @@ public class ChessGame {
             }
         }
         return null;
+    }
+
+    private void ChangeTeamTurn(){
+        if(teamTurn == TeamColor.WHITE){
+            setTeamTurn(TeamColor.BLACK);
+        } else{
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     @Override
