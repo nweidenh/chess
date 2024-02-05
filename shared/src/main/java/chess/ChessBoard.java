@@ -9,13 +9,23 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    public ChessPiece [][] BoardSquares = new ChessPiece[8][8];
+    public ChessPiece [][] BoardSquares;
 
     public ChessBoard() {
+        BoardSquares = new ChessPiece[8][8];
     }
 
-    public ChessBoard(ChessBoard that){
-        this();
+    public ChessBoard(ChessBoard copy){
+        int rows = copy.BoardSquares.length;
+        int columns = copy.BoardSquares[0].length;
+
+        this.BoardSquares = new ChessPiece[rows][columns];
+
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < columns; j++){
+                this.BoardSquares[i][j] = copy.BoardSquares[i][j];
+            }
+        }
     }
     /**
      * Adds a chess piece to the chessboard
@@ -83,8 +93,16 @@ public class ChessBoard {
 
     public String toString(){
         String retString = "";
-        for(int col = 0; col < BoardSquares.length; col++)
-            retString += Arrays.deepToString(BoardSquares) + "/n";
+        for(int col = 0; col < BoardSquares.length; col++) {
+            for (int row = 0; row < BoardSquares.length; row++) {
+                if (BoardSquares[col][row] == null){
+                    retString += "null,";
+                }else {
+                    retString += BoardSquares[col][row].toString() + ",";
+                }
+            }
+            retString += "\n";
+        }
         return retString;
     }
 

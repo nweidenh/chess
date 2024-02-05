@@ -673,10 +673,7 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "ChessPiece{" +
-                "pColor=" + pColor +
-                ", pType=" + pType +
-                '}';
+        return "(" + pColor + "," + pType + ')';
     }
 
     @Override

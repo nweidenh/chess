@@ -54,19 +54,21 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> possibleMoves = new HashSet<>(this.board.getPiece(startPosition).pieceMoves(this.board, startPosition));
+        HashSet<ChessMove> verifiedMoves = new HashSet<>();
         for(ChessMove move : possibleMoves) {
             ChessBoard boardCopy = new ChessBoard(board);
             ChessBoard originalBoard = new ChessBoard(board);
             boardCopy.addPiece(move.getEndPosition(),boardCopy.getPiece(startPosition));
             boardCopy.removePiece(startPosition);
+            System.out.print(this.board + "\n");
             setBoard(boardCopy);
-            boardCopy.getPiece(move.getEndPosition());
-            if(isInCheck(boardCopy.getPiece(move.getEndPosition()).getTeamColor())){
-                possibleMoves.remove(move);
+            System.out.print(this.board);
+            if(!isInCheck(boardCopy.getPiece(move.getEndPosition()).getTeamColor())){
+                verifiedMoves.add(move);
             }
             setBoard(originalBoard);
         }
-        return possibleMoves;
+        return verifiedMoves;
     }
 
     /**
