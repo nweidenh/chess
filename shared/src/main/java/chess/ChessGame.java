@@ -56,13 +56,14 @@ public class ChessGame {
         HashSet<ChessMove> possibleMoves = new HashSet<>(this.board.getPiece(startPosition).pieceMoves(this.board, startPosition));
         HashSet<ChessMove> verifiedMoves = new HashSet<>();
         for(ChessMove move : possibleMoves) {
+            //Makes 2 new boards
             ChessBoard boardCopy = new ChessBoard(board);
             ChessBoard originalBoard = new ChessBoard(board);
+            //Makes the proposed move on the copy of the board
             boardCopy.addPiece(move.getEndPosition(),boardCopy.getPiece(startPosition));
             boardCopy.removePiece(startPosition);
-            System.out.print(this.board + "\n");
+            //Set to copy of board
             setBoard(boardCopy);
-            System.out.print(this.board);
             if(!isInCheck(boardCopy.getPiece(move.getEndPosition()).getTeamColor())){
                 verifiedMoves.add(move);
             }
