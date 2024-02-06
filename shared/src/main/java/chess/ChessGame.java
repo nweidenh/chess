@@ -137,26 +137,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        boolean isCheckMate = false;
-        ChessPosition kingSpot = GetYourKingPosition(this.getBoard(), teamColor);
-        for (int i = 1; i < 9; i++){
-            for (int  j = 1; j < 9; j++){
-                ChessPosition currentSpace = new ChessPosition(i, j);
-                if(this.getBoard().getPiece(currentSpace) != null &&
-                        this.getBoard().getPiece(currentSpace).getTeamColor() != teamColor){
-                    Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
-                            this.getBoard().getPiece(currentSpace).pieceMoves(this.getBoard(), currentSpace));
-                    for(ChessMove moveTest : potentialMoves){
-                        if (moveTest.getEndPosition().equals(kingSpot)){
-//                        if (moveTest.getEndPosition().getRow() == kingSpot.getRow() &&
-//                            moveTest.getEndPosition().getColumn() == kingSpot.getColumn()){
-                            isCheckMate = true;
-                        }
-                    }
-                }
-            }
-        }
-        return isCheckMate;
+        return isInCheck(teamColor) && isInStalemate(teamColor);
     }
 
     /**
