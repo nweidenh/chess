@@ -1,7 +1,5 @@
 package chess;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -111,17 +109,19 @@ public class ChessGame {
         boolean isCheck = false;
         ChessPosition kingSpot = GetYourKingPosition(this.getBoard(), teamColor);
         for (int i = 1; i < 9; i++){
+            if(isCheck){
+                break;
+            }
             for (int  j = 1; j < 9; j++){
                 ChessPosition currentSpace = new ChessPosition(i, j);
                 if(this.getBoard().getPiece(currentSpace) != null &&
                    this.getBoard().getPiece(currentSpace).getTeamColor() != teamColor){
-                    Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
+                    Collection<ChessMove> potentialMoves = new HashSet<>(
                             this.getBoard().getPiece(currentSpace).pieceMoves(this.getBoard(), currentSpace));
                     for(ChessMove moveTest : potentialMoves){
                         if (moveTest.getEndPosition().equals(kingSpot)){
-//                        if (moveTest.getEndPosition().getRow() == kingSpot.getRow() &&
-//                            moveTest.getEndPosition().getColumn() == kingSpot.getColumn()){
                             isCheck = true;
+                            break;
                         }
                     }
                 }
@@ -157,7 +157,7 @@ public class ChessGame {
                 ChessPosition currentSpace = new ChessPosition(i, j);
                 if(this.getBoard().getPiece(currentSpace) != null &&
                    this.getBoard().getPiece(currentSpace).getTeamColor() == teamColor){
-                    Collection<ChessMove> potentialMoves = new HashSet<ChessMove>(
+                    Collection<ChessMove> potentialMoves = new HashSet<>(
                             validMoves(currentSpace));
                     if(!potentialMoves.isEmpty()){
                         isStalemate = false;
