@@ -1,4 +1,4 @@
-package dataAccess;
+package userDataAccess;
 
 public interface GameDAO {
 }
