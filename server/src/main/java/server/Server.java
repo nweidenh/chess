@@ -24,6 +24,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
+        Spark.delete("/session", this::logout);
         Spark.delete("/db", this::clear);
 
         Spark.awaitInitialization();
@@ -48,6 +49,13 @@ public class Server {
         AuthData authToken = service.login(user);
         res.status(200);
         return new Gson().toJson(authToken);
+    }
+
+    private Object logout(Request req, Response res) {
+        AuthData auth = new Gson().fromJson(req.body(), AuthData.class);
+        service.logout(auth);
+        res.status(200);
+        return "{}";
     }
 
     private Object clear(Request req, Response res) {

@@ -27,7 +27,9 @@ public class UserService {
         } return null;
     }
 
-    public void logout(UserData user) {
+    public void logout(AuthData auth) {
+        authDataAccess.getAuth(auth.authToken());
+        authDataAccess.deleteAuth(auth.authToken());
     }
 
     public void delete(){

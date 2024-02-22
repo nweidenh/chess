@@ -7,5 +7,7 @@ public interface AuthDAO {
 
     public AuthData getAuth (String username);
 
+    public void deleteAuth (String authToken);
+
     public void deleteAllAuths();
 }
