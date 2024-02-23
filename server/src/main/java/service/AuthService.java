@@ -1,16 +1,18 @@
 package service;
 
-import model.UserData;
 import model.AuthData;
-import userDataAccess.*;
+import model.UserData;
+import userDataAccess.AuthDAO;
+import userDataAccess.GameDAO;
+import userDataAccess.UserDAO;
 
-public class UserService {
+public class AuthService {
     private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
 
     private final GameDAO gameDataAccess;
 
-    public UserService(UserDAO user, AuthDAO auth, GameDAO game) {
+    public AuthService(UserDAO user, AuthDAO auth, GameDAO game) {
         this.userDataAccess = user;
         this.authDataAccess = auth;
         this.gameDataAccess = game;

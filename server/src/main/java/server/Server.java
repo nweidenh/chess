@@ -2,18 +2,23 @@ package server;
 
 import spark.*;
 import service.*;
-import userDataAccess.AuthDAO;
-import userDataAccess.MemoryAuthDAO;
-import userDataAccess.MemoryUserDAO;
-import userDataAccess.UserDAO;
+import userDataAccess.*;
 import com.google.gson.Gson;
 import model.*;
 
 public class Server {
-    private final UserService service;
+    private final UserDAO usersDataAccess = new MemoryUserDAO();
+    private final AuthDAO authsDataAccess = new MemoryAuthDAO();
+    private final GameDAO gamesDataAccess = new MemoryGameDAO();
+    private final UserService userService;
+    private final AuthService authService;
+    private final GameService gameService;
+
 
     public Server() {
-        service = new UserService(new MemoryUserDAO(), new MemoryAuthDAO());
+        userService = new UserService(usersDataAccess, authsDataAccess, gamesDataAccess);
+        authService = new AuthService(usersDataAccess, authsDataAccess, gamesDataAccess);
+        gameService = new GameService(usersDataAccess, authsDataAccess, gamesDataAccess);
     }
 
     public int run(int desiredPort) {
@@ -25,6 +30,7 @@ public class Server {
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
+        Spark.get("/game", this::lstGames);
         Spark.delete("/db", this::clear);
 
         Spark.awaitInitialization();
@@ -39,30 +45,34 @@ public class Server {
 
     private Object register(Request req, Response res) {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        AuthData authToken = service.register(user);
-        res.status(200);
+        AuthData authToken = userService.register(user);
         return new Gson().toJson(authToken);
     }
 
     private Object login(Request req, Response res) {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        AuthData authToken = service.login(user);
-        res.status(200);
+        AuthData authToken = userService.login(user);
         return new Gson().toJson(authToken);
     }
 
     private Object logout(Request req, Response res) {
-        AuthData auth = new Gson().fromJson(req.body(), AuthData.class);
-        service.logout(auth);
-        res.status(200);
+        String authToken = new Gson().fromJson(req.headers("Authentication"), String.class);
+        userService.logout(authToken);
         return "{}";
     }
 
+    private Object lstGames(Request req, Response res) {
+        UserData user = new Gson().fromJson(req.body(), UserData.class);
+        AuthData authToken = userService.login(user);
+        return new Gson().toJson(authToken);
+    }
+
     private Object clear(Request req, Response res) {
-        service.delete();
-        res.status(200);
+        userService.delete();
         return "{}";
     }
+
+
 
     public static void main(String[] args) {
         new Server().run(8080);
