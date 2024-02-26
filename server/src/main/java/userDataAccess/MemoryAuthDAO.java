@@ -22,9 +22,12 @@ public class MemoryAuthDAO implements AuthDAO{
             return tokens.get(authToken);
         } else return null;
     }
+
+    //Delete one auth token
     public void deleteAuth(String authToken){
         tokens.remove(authToken);
     }
+
     //Delete all authTokens from the database
     public void deleteAllAuths(){
         tokens.clear();

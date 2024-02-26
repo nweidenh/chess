@@ -5,6 +5,7 @@ import service.*;
 import userDataAccess.*;
 import com.google.gson.Gson;
 import model.*;
+import java.util.Map;
 
 public class Server {
     private final UserDAO usersDataAccess = new MemoryUserDAO();
@@ -31,6 +32,8 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.get("/game", this::lstGames);
+        Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::clear);
 
         Spark.awaitInitialization();
@@ -62,13 +65,29 @@ public class Server {
     }
 
     private Object lstGames(Request req, Response res) {
-        UserData user = new Gson().fromJson(req.body(), UserData.class);
-        AuthData authToken = userService.login(user);
-        return new Gson().toJson(authToken);
+        String authToken = new Gson().fromJson(req.headers("Authentication"), String.class);
+        var list = gameService.lstGames(authToken).toArray();
+        return new Gson().toJson(Map.of("games",list));
+    }
+
+    private Object createGame(Request req, Response res) {
+        String authToken = new Gson().fromJson(req.headers("Authentication"), String.class);
+        GameData gameName = new Gson().fromJson(req.body(), GameData.class);
+        createGameResponse createdGameID = gameService.createGame(authToken, gameName.gameName());
+        return new Gson().toJson(createdGameID);
+    }
+
+    private Object joinGame(Request req, Response res) {
+        String auth = new Gson().fromJson(req.headers("Authentication"), String.class);
+        joinGameRequest game = new Gson().fromJson(req.body(), joinGameRequest.class);
+        gameService.joinGame(auth, game);
+        return "{}";
     }
 
     private Object clear(Request req, Response res) {
-        userService.delete();
+        userService.deleteAll();
+        gameService.deleteAll();
+        authService.deleteAll();
         return "{}";
     }
 

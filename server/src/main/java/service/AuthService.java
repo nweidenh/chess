@@ -18,26 +18,9 @@ public class AuthService {
         this.gameDataAccess = game;
     }
 
-    public AuthData register(UserData user) {
-        if(userDataAccess.getUser(user.username()) == null){
-            userDataAccess.createUser(user);
-            return authDataAccess.createAuth(user.username());
-        } return null;
-    }
 
-    public AuthData login(UserData user) {
-        if(userDataAccess.getUser(user.username()) != null){
-            return authDataAccess.createAuth(userDataAccess.getUser(user.username()).username());
-        } return null;
-    }
-
-    public void logout(String auth) {
-        authDataAccess.getAuth(auth);
-        authDataAccess.deleteAuth(auth);
-    }
-
-    public void delete(){
-        userDataAccess.deleteAllUsers();
+    //Delete all auth tokens
+    public void deleteAll(){
         authDataAccess.deleteAllAuths();
     }
 }

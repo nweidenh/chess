@@ -34,8 +34,8 @@ public class UserService {
         authDataAccess.deleteAuth(auth);
     }
 
-    public void delete(){
+    //Delete all users
+    public void deleteAll(){
         userDataAccess.deleteAllUsers();
-        authDataAccess.deleteAllAuths();
     }
 }

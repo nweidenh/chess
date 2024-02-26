@@ -6,9 +6,14 @@ import java.util.Collection;
 
 public interface GameDAO {
 
-    void createGame (String gameName);
+    GameData createGame (String gameName);
 
     Collection<GameData> getAllGames ();
 
+    GameData getGame(int gameID);
+
+    public void updateGame(GameData game);
+
     void deleteAllGames ();
+
 }
