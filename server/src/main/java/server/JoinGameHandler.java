@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import model.Error;
-import model.joinGameRequest;
+import model.JoinGameRequest;
 import service.GameService;
 import spark.Request;
 import spark.Response;
@@ -21,7 +21,7 @@ public class JoinGameHandler {
                 throw new DataAccessException(401, "Error: unauthorized");
             }
             String auth = new Gson().fromJson(req.headers("authorization"), String.class);
-            joinGameRequest game = new Gson().fromJson(req.body(), joinGameRequest.class);
+            JoinGameRequest game = new Gson().fromJson(req.body(), JoinGameRequest.class);
             gameService.joinGame(auth, game);
             return "{}";
         } catch (DataAccessException ex) {

@@ -23,14 +23,14 @@ public class GameService {
         return gameDataAccess.getAllGames();
     }
 
-    public createGameResponse createGame(String auth, String gameName) throws DataAccessException{
+    public CreateGameResponse createGame(String auth, String gameName) throws DataAccessException{
         authDataAccess.getAuth(auth);
         GameData createdGame = gameDataAccess.createGame(gameName);
-        new createGameResponse(createdGame.gameID());
-        return new createGameResponse(createdGame.gameID());
+        new CreateGameResponse(createdGame.gameID());
+        return new CreateGameResponse(createdGame.gameID());
     }
 
-    public void joinGame(String authToken, joinGameRequest game) throws DataAccessException{
+    public void joinGame(String authToken, JoinGameRequest game) throws DataAccessException{
         AuthData userAuth = authDataAccess.getAuth(authToken);
         GameData joinThisGame = gameDataAccess.getGame(game.gameID());
         if(!Objects.equals(game.playerColor(), "WHITE") && !Objects.equals(game.playerColor(), "BLACK") && game.playerColor() != null){

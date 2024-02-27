@@ -18,7 +18,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) == null){
                 if(endPos.getRow() == 8){
-                    pawn.addAll(PawnPromotionLst(myPosition, endPos));
+                    pawn.addAll(pawnPromotionLst(myPosition, endPos));
                 }else {
                     pawn.add(myMove);
                 }
@@ -39,7 +39,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) == null){
                 if(endPos.getRow() == 1){
-                    pawn.addAll(PawnPromotionLst(myPosition, endPos));
+                    pawn.addAll(pawnPromotionLst(myPosition, endPos));
                 }else {
                     pawn.add(myMove);
                 }
@@ -60,7 +60,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) != null && board.getPiece(endPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
                 if(endPos.getRow() == 8){
-                    pawn.addAll(PawnPromotionLst(myPosition, endPos));
+                    pawn.addAll(pawnPromotionLst(myPosition, endPos));
                 }else {
                     pawn.add(myMove);
                 }
@@ -72,7 +72,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) != null && board.getPiece(endPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
                 if(endPos.getRow() == 8){
-                    pawn.addAll(PawnPromotionLst(myPosition, endPos));
+                    pawn.addAll(pawnPromotionLst(myPosition, endPos));
                 }else {
                     pawn.add(myMove);
                 }
@@ -84,7 +84,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) != null && board.getPiece(endPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
                 if(endPos.getRow() == 1){
-                    pawn.addAll(PawnPromotionLst(myPosition, endPos));
+                    pawn.addAll(pawnPromotionLst(myPosition, endPos));
                 }else {
                     pawn.add(myMove);
                 }
@@ -96,7 +96,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
             ChessMove myMove = new ChessMove(myPosition, endPos, null);
             if(board.getPiece(endPos) != null && board.getPiece(endPos).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
                 if(endPos.getRow() == 1){
-                    pawn.addAll(PawnPromotionLst(myPosition, endPos));
+                    pawn.addAll(pawnPromotionLst(myPosition, endPos));
                 }else {
                     pawn.add(myMove);
                 }
@@ -105,14 +105,14 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         return pawn;
     }
 
-    private ArrayList<ChessMove> PawnPromotionLst(ChessPosition start, ChessPosition endPos){
+    private ArrayList<ChessMove> pawnPromotionLst(ChessPosition start, ChessPosition endPos){
         ArrayList<ChessMove> myMoves = new ArrayList<>();
-        for(ChessPiece.PieceType Piece: ChessPiece.PieceType.values()){
-            if(Piece== ChessPiece.PieceType.PAWN || Piece == ChessPiece.PieceType.KING){
+        for(ChessPiece.PieceType piece: ChessPiece.PieceType.values()){
+            if(piece== ChessPiece.PieceType.PAWN || piece == ChessPiece.PieceType.KING){
                 continue;
             } else{
-                ChessMove PromoMove = new ChessMove(start, endPos, Piece);
-                myMoves.add(PromoMove);
+                ChessMove promoMove = new ChessMove(start, endPos, piece);
+                myMoves.add(promoMove);
             }
         }
         return myMoves;

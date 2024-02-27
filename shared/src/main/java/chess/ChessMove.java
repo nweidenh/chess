@@ -46,9 +46,6 @@ public class ChessMove {
     @Override
     public String toString() {
         String pString = "[" + getEndPosition().getRow() + "," + getEndPosition().getColumn() + "]";
-        //return String.format("[%d,%d] -> [%d,%d], (%S)", getStartPosition().getRow(), getStartPosition().getColumn(), getEndPosition().getRow(), getEndPosition().getColumn(), getPromotionPiece());
-//        if(getPromotionPiece()!= null)
-//            pString += " (" + getPromotionPiece().toString() + ")";
         return pString;
     }
 

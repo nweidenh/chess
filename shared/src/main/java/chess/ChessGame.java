@@ -95,7 +95,7 @@ public class ChessGame {
                 this.board.addPiece(proposedMoveEnd, pieceMoving);
             }
             this.board.removePiece(proposedMoveStart);
-            this.ChangeTeamTurn();
+            this.changeTeamTurn();
         }
     }
 
@@ -107,7 +107,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         boolean isCheck = false;
-        ChessPosition kingSpot = GetYourKingPosition(this.getBoard(), teamColor);
+        ChessPosition kingSpot = getYourKingPosition(this.getBoard(), teamColor);
         for (int i = 1; i < 9; i++){
             if(isCheck){
                 break;
@@ -186,7 +186,7 @@ public class ChessGame {
         return this.board;
     }
 
-    private ChessPosition GetYourKingPosition(ChessBoard board, TeamColor team){
+    private ChessPosition getYourKingPosition(ChessBoard board, TeamColor team){
         ChessPosition king;
         for (int i = 1; i < 9; i++){
             for (int  j = 1; j < 9; j++) {
@@ -201,7 +201,7 @@ public class ChessGame {
         return null;
     }
 
-    private void ChangeTeamTurn(){
+    private void changeTeamTurn(){
         if(teamTurn == TeamColor.WHITE){
             setTeamTurn(TeamColor.BLACK);
         } else{
