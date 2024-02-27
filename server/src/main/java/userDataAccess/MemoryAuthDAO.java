@@ -20,7 +20,9 @@ public class MemoryAuthDAO implements AuthDAO{
     public AuthData getAuth (String authToken) throws DataAccessException{
         if(tokens.get(authToken) != null){
             return tokens.get(authToken);
-        } else return null;
+        } else {
+            throw new DataAccessException(401, "Error: unauthorized");
+        }
     }
 
     //Delete one auth token

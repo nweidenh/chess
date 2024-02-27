@@ -7,6 +7,8 @@ import userDataAccess.DataAccessException;
 import userDataAccess.GameDAO;
 import userDataAccess.UserDAO;
 
+import javax.xml.crypto.Data;
+
 public class AuthService {
     private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
@@ -21,11 +23,7 @@ public class AuthService {
 
 
     //Delete all auth tokens
-    public void deleteAll(){
-        try{
-            authDataAccess.deleteAllAuths();
-        } catch (DataAccessException error){
-
-        }
+    public void deleteAll() throws DataAccessException {
+        authDataAccess.deleteAllAuths();
     }
 }

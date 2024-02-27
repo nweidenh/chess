@@ -34,14 +34,24 @@ public class GameService {
     public void joinGame(String authToken, joinGameRequest game) throws DataAccessException{
         AuthData userAuth = authDataAccess.getAuth(authToken);
         GameData joinThisGame = gameDataAccess.getGame(game.gameID());
-        //You need to change this so that the actual username is getting pulled
-        //Pull from the authToken to get the username and then input that username
-        if(Objects.equals(game.playerColor(), "BLACK") && joinThisGame.blackUsername() == null){
-            GameData joinThisGameBlack = joinThisGame.changeBlackUsername(userAuth.username());
-            gameDataAccess.updateGame(joinThisGameBlack);
-        } else if(Objects.equals(game.playerColor(), "WHITE") && joinThisGame.whiteUsername() == null){
+        if(!Objects.equals(game.playerColor(), "WHITE") && !Objects.equals(game.playerColor(), "BLACK") && game.playerColor() != null){
+            throw new DataAccessException(400, "Error: bad request");
+        }
+        else if(Objects.equals(game.playerColor(), "BLACK")){
+            if (joinThisGame.blackUsername() == null){
+                GameData joinThisGameBlack = joinThisGame.changeBlackUsername(userAuth.username());
+                gameDataAccess.updateGame(joinThisGameBlack);
+            } else {
+                throw new DataAccessException(403, "Error: already taken");
+            }
+        }
+        else if(Objects.equals(game.playerColor(), "WHITE")){
+            if(joinThisGame.whiteUsername() == null){
             GameData joinThisGameWhite = joinThisGame.changeWhiteUsername(userAuth.username());
             gameDataAccess.updateGame(joinThisGameWhite);
+            } else {
+                throw new DataAccessException(403, "Error: already taken");
+            }
         }
     }
 

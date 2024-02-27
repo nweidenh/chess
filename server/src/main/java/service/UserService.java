@@ -16,26 +16,22 @@ public class UserService {
         this.gameDataAccess = game;
     }
 
-    public AuthData register(UserData user) {
-        if(userDataAccess.getUser(user.username()) == null){
-            userDataAccess.createUser(user);
-            return authDataAccess.createAuth(user.username());
-        } return null;
+    public AuthData register(UserData user) throws DataAccessException{
+        userDataAccess.createUser(user);
+        return authDataAccess.createAuth(user.username());
     }
 
-    public AuthData login(UserData user) {
-        if(userDataAccess.getUser(user.username()) != null){
-            return authDataAccess.createAuth(userDataAccess.getUser(user.username()).username());
-        } return null;
+    public AuthData login(UserData user) throws DataAccessException{
+        return authDataAccess.createAuth(userDataAccess.getUser(user).username());
     }
 
-    public void logout(String auth) {
+    public void logout(String auth) throws DataAccessException{
         authDataAccess.getAuth(auth);
         authDataAccess.deleteAuth(auth);
     }
 
     //Delete all users
-    public void deleteAll(){
+    public void deleteAll() throws DataAccessException{
         userDataAccess.deleteAllUsers();
     }
 }

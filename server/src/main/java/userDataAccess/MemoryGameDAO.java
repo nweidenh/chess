@@ -11,10 +11,14 @@ public class MemoryGameDAO implements GameDAO{
     final private static HashMap<Integer, GameData> games = new HashMap<>();
 
     public GameData createGame (String gameName) throws DataAccessException{
-        GameData createdGame = new GameData(nextGameID, null,null, gameName, new ChessGame());
-        nextGameID += 1;
-        games.put(createdGame.gameID(), createdGame);
-        return createdGame;
+        if (gameName == null){
+            throw new DataAccessException(400, "Error: bad request");
+        } else {
+            GameData createdGame = new GameData(nextGameID, null, null, gameName, new ChessGame());
+            nextGameID += 1;
+            games.put(createdGame.gameID(), createdGame);
+            return createdGame;
+        }
     }
 
     public Collection<GameData> getAllGames () throws DataAccessException{
@@ -22,6 +26,9 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     public GameData getGame(int gameID) throws DataAccessException{
+        if (games.get(gameID) == null){
+            throw new DataAccessException(400, "Error: bad request");
+        }
         return games.get(gameID);
     }
 
