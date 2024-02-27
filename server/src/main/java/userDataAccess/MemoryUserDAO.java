@@ -1,4 +1,5 @@
 package userDataAccess;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -26,6 +27,10 @@ public class MemoryUserDAO implements UserDAO{
             throw new DataAccessException(401, "Error: unauthorized");
         }
         return users.get(user.username());
+    }
+
+    public HashMap<String, UserData> getUsers () throws DataAccessException{
+        return users;
     }
 
     public void deleteAllUsers() throws DataAccessException{

@@ -8,6 +8,7 @@ import userDataAccess.GameDAO;
 import userDataAccess.UserDAO;
 
 import javax.xml.crypto.Data;
+import java.util.HashMap;
 
 public class AuthService {
     private final UserDAO userDataAccess;
@@ -21,6 +22,9 @@ public class AuthService {
         this.gameDataAccess = game;
     }
 
+    public HashMap<String, AuthData> getAuths() throws DataAccessException{
+        return authDataAccess.getAuths();
+    }
 
     //Delete all auth tokens
     public void deleteAll() throws DataAccessException {

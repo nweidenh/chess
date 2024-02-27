@@ -1,6 +1,8 @@
 package userDataAccess;
 import model.AuthData;
 
+import java.util.HashMap;
+
 public interface AuthDAO {
 
     AuthData createAuth (String username) throws DataAccessException;
@@ -10,4 +12,6 @@ public interface AuthDAO {
     void deleteAuth (String authToken) throws DataAccessException;
 
     void deleteAllAuths() throws DataAccessException;
+
+    public HashMap<String, AuthData> getAuths () throws DataAccessException;
 }

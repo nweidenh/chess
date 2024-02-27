@@ -4,6 +4,8 @@ import model.UserData;
 import model.AuthData;
 import userDataAccess.*;
 
+import java.util.HashMap;
+
 public class UserService {
     private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
@@ -28,6 +30,10 @@ public class UserService {
     public void logout(String auth) throws DataAccessException{
         authDataAccess.getAuth(auth);
         authDataAccess.deleteAuth(auth);
+    }
+
+    public HashMap<String, UserData> getUsers() throws DataAccessException{
+        return userDataAccess.getUsers();
     }
 
     //Delete all users

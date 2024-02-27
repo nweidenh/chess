@@ -3,6 +3,7 @@ package service;
 import model.*;
 import userDataAccess.*;
 
+import javax.xml.crypto.Data;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -52,6 +53,10 @@ public class GameService {
                 throw new DataAccessException(403, "Error: already taken");
             }
         }
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        return gameDataAccess.getGame(gameID);
     }
 
     public void deleteAll()throws DataAccessException{
