@@ -5,9 +5,9 @@ public interface AuthDAO {
 
     AuthData createAuth (String username) throws DataAccessException;
 
-    public AuthData getAuth (String username) throws DataAccessException;
+    AuthData getAuth (String username) throws DataAccessException;
 
-    public void deleteAuth (String authToken) throws DataAccessException;
+    void deleteAuth (String authToken) throws DataAccessException;
 
-    public void deleteAllAuths() throws DataAccessException;
+    void deleteAllAuths() throws DataAccessException;
 }
