@@ -10,26 +10,27 @@ public class MemoryGameDAO implements GameDAO{
     private int nextGameID = 1;
     final private static HashMap<Integer, GameData> games = new HashMap<>();
 
-    public GameData createGame (String gameName){
+    public GameData createGame (String gameName) throws DataAccessException{
         GameData createdGame = new GameData(nextGameID, null,null, gameName, new ChessGame());
-        this.nextGameID += 1;
+        nextGameID += 1;
         games.put(createdGame.gameID(), createdGame);
         return createdGame;
     }
 
-    public Collection<GameData> getAllGames (){
+    public Collection<GameData> getAllGames () throws DataAccessException{
         return games.values();
     }
 
-    public GameData getGame(int gameID){
+    public GameData getGame(int gameID) throws DataAccessException{
         return games.get(gameID);
     }
 
-    public void updateGame(GameData game){
+    public void updateGame(GameData game) throws DataAccessException{
         games.put(game.gameID(), game);
     }
 
-    public void deleteAllGames (){
+    public void deleteAllGames () throws DataAccessException{
         games.clear();
+        nextGameID = 1;
     }
 }

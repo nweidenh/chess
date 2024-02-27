@@ -59,26 +59,26 @@ public class Server {
     }
 
     private Object logout(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("Authentication"), String.class);
+        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
         userService.logout(authToken);
         return "{}";
     }
 
     private Object lstGames(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("Authentication"), String.class);
+        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
         var list = gameService.lstGames(authToken).toArray();
         return new Gson().toJson(Map.of("games",list));
     }
 
     private Object createGame(Request req, Response res) {
-        String authToken = new Gson().fromJson(req.headers("Authentication"), String.class);
+        String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
         GameData gameName = new Gson().fromJson(req.body(), GameData.class);
         createGameResponse createdGameID = gameService.createGame(authToken, gameName.gameName());
         return new Gson().toJson(createdGameID);
     }
 
     private Object joinGame(Request req, Response res) {
-        String auth = new Gson().fromJson(req.headers("Authentication"), String.class);
+        String auth = new Gson().fromJson(req.headers("authorization"), String.class);
         joinGameRequest game = new Gson().fromJson(req.body(), joinGameRequest.class);
         gameService.joinGame(auth, game);
         return "{}";

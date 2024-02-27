@@ -3,6 +3,7 @@ package service;
 import model.AuthData;
 import model.UserData;
 import userDataAccess.AuthDAO;
+import userDataAccess.DataAccessException;
 import userDataAccess.GameDAO;
 import userDataAccess.UserDAO;
 
@@ -21,6 +22,10 @@ public class AuthService {
 
     //Delete all auth tokens
     public void deleteAll(){
-        authDataAccess.deleteAllAuths();
+        try{
+            authDataAccess.deleteAllAuths();
+        } catch (DataAccessException error){
+
+        }
     }
 }
