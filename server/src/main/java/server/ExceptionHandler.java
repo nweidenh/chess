@@ -6,6 +6,6 @@ import userDataAccess.DataAccessException;
 
 public class ExceptionHandler {
     public ExceptionHandler(DataAccessException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.statusCode());
     }
 }
