@@ -7,7 +7,7 @@ import service.GameService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
-import userDataAccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class ClearHandler {
     private final UserService userService;

@@ -1,7 +1,6 @@
-package userDataAccess;
+package dataAccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.util.UUID;
 

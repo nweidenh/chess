@@ -2,7 +2,7 @@ package service;
 
 import model.UserData;
 import model.AuthData;
-import userDataAccess.*;
+import dataAccess.*;
 
 import java.util.HashMap;
 

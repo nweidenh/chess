@@ -6,7 +6,7 @@ import model.JoinGameRequest;
 import service.GameService;
 import spark.Request;
 import spark.Response;
-import userDataAccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class JoinGameHandler {
     private final GameService gameService;

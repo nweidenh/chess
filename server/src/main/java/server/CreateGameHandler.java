@@ -7,7 +7,7 @@ import model.CreateGameResponse;
 import service.GameService;
 import spark.Request;
 import spark.Response;
-import userDataAccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class CreateGameHandler {
     private final GameService gameService;

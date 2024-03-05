@@ -2,7 +2,7 @@ package server;
 
 import spark.*;
 import service.*;
-import userDataAccess.*;
+import dataAccess.*;
 
 public class Server {
     private final UserService userService;

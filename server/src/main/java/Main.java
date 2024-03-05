@@ -1,7 +1,5 @@
 import chess.*;
 import server.Server;
-import userDataAccess.MemoryAuthDAO;
-import userDataAccess.MemoryUserDAO;
 
 public class Main {
     public static void main(String[] args) {

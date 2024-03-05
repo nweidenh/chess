@@ -7,7 +7,7 @@ import model.UserData;
 import service.UserService;
 import spark.Request;
 import spark.Response;
-import userDataAccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class LoginHandler {
     private final UserService userService;

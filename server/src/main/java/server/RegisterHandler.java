@@ -7,7 +7,7 @@ import model.UserData;
 import service.*;
 import spark.Request;
 import spark.Response;
-import userDataAccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class RegisterHandler {
 

@@ -5,7 +5,7 @@ import model.Error;
 import service.UserService;
 import spark.Request;
 import spark.Response;
-import userDataAccess.DataAccessException;
+import dataAccess.DataAccessException;
 
 public class LogoutHandler {
 

@@ -1,13 +1,11 @@
 package service;
 
 import model.AuthData;
-import model.UserData;
-import userDataAccess.AuthDAO;
-import userDataAccess.DataAccessException;
-import userDataAccess.GameDAO;
-import userDataAccess.UserDAO;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
+import dataAccess.UserDAO;
 
-import javax.xml.crypto.Data;
 import java.util.HashMap;
 
 public class AuthService {
