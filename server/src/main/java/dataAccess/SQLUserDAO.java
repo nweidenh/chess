@@ -6,6 +6,7 @@ import model.UserData;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -18,23 +19,44 @@ public class SQLUserDAO  implements UserDAO{
     }
 
     public void createUser (UserData user) throws DataAccessException{
-        var statement = "INSERT INTO Users (username, password, email, json) VALUES (?, ?, ?, ?)";
-        var json = new Gson().toJson(user);
-        executeUpdate(statement, user.username(), user.password(), user.email(),json);
+        UserData dummyUser = null;
+        if(user.username() == null || user.password() == null || user.email() == null){
+            throw new DataAccessException (400, "Error: bad request");
+        }
+        else {
+            try{
+                dummyUser = getUser(user);
+            }catch (Exception e){
+                var statement = "INSERT INTO Users (username, password, email, json) VALUES (?, ?, ?, ?)";
+                var json = new Gson().toJson(user);
+                executeUpdate(statement, user.username(), user.password(), user.email(), json);
+                System.out.println("the test user threw an exception");
+            } if (dummyUser != null){
+                throw new DataAccessException(403, "Error: unauthorized");
+            }
+        }
     }
 
     public UserData getUser (UserData user) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email, json FROM Users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(5, user.username());
+                ps.setString(1, user.username());
                 try (var rs = ps.executeQuery()) {
-                    var json = rs.getString("json");
-                    return new Gson().fromJson(json, UserData.class);
+                    if (rs.next()) {
+                        var json = rs.getString("json");
+                        UserData gottenUser = new Gson().fromJson(json, UserData.class);
+                        if (!Objects.equals(gottenUser.password(), user.password())) {
+                            throw new DataAccessException(401, "Error: unauthorized");
+                        }
+                        return gottenUser;
+                    } else {
+                        throw new DataAccessException(401, "Error: unauthorized");
+                    }
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(401, String.format("Unable to read data: %s", e.getMessage()));
         }
     };
 
@@ -92,22 +114,25 @@ public class SQLUserDAO  implements UserDAO{
               username varchar(256) NOT NULL,
               password varchar(256) NOT NULL,
               email varchar(256) NOT NULL,
+              json TEXT DEFAULT NULL,
               PRIMARY KEY (username),
               INDEX(password),
               INDEX(email)
-            )
+            )""", """
             CREATE TABLE IF NOT EXISTS Games  (
-              gameID int NOT NULL AUTO_INCREMENT,
+              gameID int NOT NULL,
               whiteUsername varchar(256),
               blackUsername varchar(256),
               gameName varchar(256) NOT NULL,
               game longtext,
+              json TEXT DEFAULT NULL,
               PRIMARY KEY (gameID),
               INDEX(gameName)
-            )
+            )""", """
             CREATE TABLE IF NOT EXISTS Auths  (
               authToken varchar(256) NOT NULL,
               username varchar(256) NOT NULL,
+              json TEXT DEFAULT NULL,
               PRIMARY KEY (authToken),
               INDEX(username)
             )

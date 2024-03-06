@@ -28,18 +28,22 @@ public class SQLAuthDAO implements AuthDAO{
         return authToken;
     }
 
-    public AuthData getAuth (String username) throws DataAccessException{
+    public AuthData getAuth (String authToken) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, authToken, json FROM Auths WHERE username=?";
+            var statement = "SELECT username, authToken, json FROM Auths WHERE authToken    =?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(4, username);
+                ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
-                    var json = rs.getString("json");
-                    return new Gson().fromJson(json, AuthData.class);
+                    if (rs.next()) {
+                        var json = rs.getString("json");
+                        return new Gson().fromJson(json, AuthData.class);
+                    } else {
+                        throw new DataAccessException(401, "Error: unauthorized");
+                    }
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(401, String.format("Unable to read data: %s", e.getMessage()));
         }
     }
 
@@ -105,9 +109,9 @@ public class SQLAuthDAO implements AuthDAO{
               PRIMARY KEY (username),
               INDEX(password),
               INDEX(email)
-            )
+            )""", """
             CREATE TABLE IF NOT EXISTS Games  (
-              gameID int NOT NULL AUTO_INCREMENT,
+              gameID int NOT NULL,
               whiteUsername varchar(256),
               blackUsername varchar(256),
               gameName varchar(256) NOT NULL,
@@ -115,7 +119,7 @@ public class SQLAuthDAO implements AuthDAO{
               json TEXT DEFAULT NULL,
               PRIMARY KEY (gameID),
               INDEX(gameName)
-            )
+            )""", """
             CREATE TABLE IF NOT EXISTS Auths  (
               authToken varchar(256) NOT NULL,
               username varchar(256) NOT NULL,

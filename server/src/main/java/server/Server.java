@@ -11,9 +11,24 @@ public class Server {
 
 
     public Server() {
-        UserDAO usersDataAccess = new MemoryUserDAO();
-        AuthDAO authsDataAccess = new MemoryAuthDAO();
-        GameDAO gamesDataAccess = new MemoryGameDAO();
+        UserDAO usersDataAccess = null;
+        try {
+            usersDataAccess = new SQLUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        AuthDAO authsDataAccess = null;
+        try {
+            authsDataAccess = new SQLAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        GameDAO gamesDataAccess = null;
+        try {
+            gamesDataAccess = new SQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         userService = new UserService(usersDataAccess, authsDataAccess, gamesDataAccess);
         authService = new AuthService(usersDataAccess, authsDataAccess, gamesDataAccess);
         gameService = new GameService(usersDataAccess, authsDataAccess, gamesDataAccess);

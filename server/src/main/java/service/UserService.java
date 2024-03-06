@@ -24,7 +24,9 @@ public class UserService {
     }
 
     public AuthData login(UserData user) throws DataAccessException{
-        return authDataAccess.createAuth(userDataAccess.getUser(user).username());
+        UserData user1 = userDataAccess.getUser(user);
+        String userName = user1.username();
+        return authDataAccess.createAuth(userName);
     }
 
     public void logout(String auth) throws DataAccessException{

@@ -51,15 +51,18 @@ public class SQLGameDAO  implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game, json FROM Games WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(7, gameID);
+                ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
-                    var json = rs.getString("json");
-                    return new Gson().fromJson(json, GameData.class);
+                    if (rs.next()) {
+                        var json = rs.getString("json");
+                        return new Gson().fromJson(json, GameData.class);
+                    }
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
         }
+        return null;
     }
 
     public void updateGame(GameData game) throws DataAccessException{
@@ -103,22 +106,25 @@ public class SQLGameDAO  implements GameDAO{
               username varchar(256) NOT NULL,
               password varchar(256) NOT NULL,
               email varchar(256) NOT NULL,
+              json TEXT DEFAULT NULL,
               PRIMARY KEY (username),
               INDEX(password),
               INDEX(email)
-            )
+            )""", """
             CREATE TABLE IF NOT EXISTS Games  (
-              gameID int NOT NULL AUTO_INCREMENT,
+              gameID int NOT NULL,
               whiteUsername varchar(256),
               blackUsername varchar(256),
               gameName varchar(256) NOT NULL,
               game longtext,
+              json TEXT DEFAULT NULL,
               PRIMARY KEY (gameID),
               INDEX(gameName)
-            )
+            )""", """
             CREATE TABLE IF NOT EXISTS Auths  (
               authToken varchar(256) NOT NULL,
               username varchar(256) NOT NULL,
+              json TEXT DEFAULT NULL,
               PRIMARY KEY (authToken),
               INDEX(username)
             )
@@ -128,11 +134,11 @@ public class SQLGameDAO  implements GameDAO{
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
+                for (var statement : createStatements) {
+                    try (var preparedStatement = conn.prepareStatement(statement)) {
+                        preparedStatement.executeUpdate();
+                    }
                 }
-            }
         } catch (SQLException ex) {
             throw new DataAccessException(500, ex.getMessage());
         }

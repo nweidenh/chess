@@ -1,10 +1,8 @@
 package service;
 
 import model.AuthData;
-import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import dataAccess.*;
 
 import java.util.HashMap;
 
