@@ -12,13 +12,13 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataAccessTestsSQL {
+public class dataAccessTests {
 
     UserDAO usersDataAccess;
     AuthDAO authsDataAccess;
     GameDAO gamesDataAccess;
 
-    public DataAccessTestsSQL(){
+    public dataAccessTests(){
         usersDataAccess = null;
         try {
             usersDataAccess = new SQLUserDAO();
