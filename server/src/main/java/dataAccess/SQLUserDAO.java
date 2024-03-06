@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class SQLUserDAO  implements UserDAO{
 
@@ -28,7 +30,8 @@ public class SQLUserDAO  implements UserDAO{
                 dummyUser = getUser(user);
             }catch (Exception e){
                 var statement = "INSERT INTO Users (username, password, email, json) VALUES (?, ?, ?, ?)";
-                var json = new Gson().toJson(user);
+                UserData hashedUser = new UserData(user.username(), storeUserPassword(user.password()), user.email());
+                var json = new Gson().toJson(hashedUser);
                 executeUpdate(statement, user.username(), user.password(), user.email(), json);
             } if (dummyUser != null){
                 throw new DataAccessException(403, "Error: unauthorized");
@@ -45,7 +48,7 @@ public class SQLUserDAO  implements UserDAO{
                     if (rs.next()) {
                         var json = rs.getString("json");
                         UserData gottenUser = new Gson().fromJson(json, UserData.class);
-                        if (!Objects.equals(gottenUser.password(), user.password())) {
+                        if (!verifyUser(gottenUser.password(), user.password())) {
                             throw new DataAccessException(401, "Error: unauthorized");
                         }
                         return gottenUser;
@@ -149,5 +152,16 @@ public class SQLUserDAO  implements UserDAO{
         } catch (SQLException ex) {
             throw new DataAccessException(500, ex.getMessage());
         }
+    }
+
+    private String storeUserPassword(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        return hashedPassword;
+    }
+
+    boolean verifyUser(String hashedPassword, String providedClearTextPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(providedClearTextPassword, hashedPassword);
     }
 }

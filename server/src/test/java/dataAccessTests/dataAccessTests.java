@@ -70,7 +70,7 @@ public class dataAccessTests {
         usersDataAccess.createUser(user);
         actualUser = usersDataAccess.getUser(user);
 
-        assertEquals(user, actualUser);
+        assertEquals(user.username(), actualUser.username());
     }
 
     @Test
@@ -108,7 +108,8 @@ public class dataAccessTests {
         expected.put(user2.username(), user2);
 
         var actual = usersDataAccess.getUsers();
-        assertEquals(expected, actual);
+        assertEquals(expected.containsKey(user.username()), actual.containsKey(user.username()));
+        assertEquals(expected.containsKey(user2.username()), actual.containsKey(user2.username()));
     }
 
     @Test
