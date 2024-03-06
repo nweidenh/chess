@@ -30,7 +30,6 @@ public class SQLUserDAO  implements UserDAO{
                 var statement = "INSERT INTO Users (username, password, email, json) VALUES (?, ?, ?, ?)";
                 var json = new Gson().toJson(user);
                 executeUpdate(statement, user.username(), user.password(), user.email(), json);
-                System.out.println("the test user threw an exception");
             } if (dummyUser != null){
                 throw new DataAccessException(403, "Error: unauthorized");
             }

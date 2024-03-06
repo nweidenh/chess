@@ -56,13 +56,14 @@ public class SQLGameDAO  implements GameDAO{
                     if (rs.next()) {
                         var json = rs.getString("json");
                         return new Gson().fromJson(json, GameData.class);
+                    } else {
+                        throw new DataAccessException(400, "Error: unauthorized");
                     }
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(500, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(400, String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
     }
 
     public void updateGame(GameData game) throws DataAccessException{
