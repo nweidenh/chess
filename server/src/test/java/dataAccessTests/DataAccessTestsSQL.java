@@ -4,25 +4,21 @@ import chess.ChessGame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.*;
 import dataAccess.*;
 import model.*;
 
-
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class dataAccessTestsSQL {
+public class DataAccessTestsSQL {
 
     UserDAO usersDataAccess;
     AuthDAO authsDataAccess;
     GameDAO gamesDataAccess;
 
-    public dataAccessTestsSQL(){
+    public DataAccessTestsSQL(){
         usersDataAccess = null;
         try {
             usersDataAccess = new SQLUserDAO();
@@ -58,6 +54,15 @@ public class dataAccessTestsSQL {
     }
 
     @Test
+    @DisplayName("Failed Create User")
+    void failedCreateUser() throws DataAccessException{
+        var user = new UserData("newUser", null, "advancedEmail@gmail.com");
+        Throwable ex = assertThrows(DataAccessException.class, () -> usersDataAccess.createUser(user));
+
+        assertEquals("Error: bad request", ex.getMessage());
+    }
+
+    @Test
     @DisplayName("Successful Get User")
     void getTheUser() throws DataAccessException{
         var user = new UserData("newUser", "strongPassword", "advancedEmail@gmail.com");
@@ -66,6 +71,18 @@ public class dataAccessTestsSQL {
         actualUser = usersDataAccess.getUser(user);
 
         assertEquals(user, actualUser);
+    }
+
+    @Test
+    @DisplayName("Failed Get User")
+    void failedGetTheUser() throws DataAccessException{
+        var user = new UserData("newUser", "strongPassword", "advancedEmail@gmail.com");
+        var badUser = new UserData("badUser", "strongPassword", "advancedEmail@gmail.com");
+        usersDataAccess.createUser(user);
+
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> usersDataAccess.getUser(badUser));
+
+        assertEquals(401, ex.statusCode());
     }
 
     @Test
@@ -95,6 +112,13 @@ public class dataAccessTestsSQL {
     }
 
     @Test
+    @DisplayName("Failed Get All Users")
+    void failedGetAllUsers() throws DataAccessException{
+        var actual = usersDataAccess.getUsers();
+        assertEquals(0, actual.size());
+    }
+
+    @Test
     @DisplayName("Successful Create Auth")
     void createAuth() throws DataAccessException{
         var user = new UserData("newUser", "strongPassword", "advancedEmail@gmail.com");
@@ -102,6 +126,17 @@ public class dataAccessTestsSQL {
         AuthData actualAuth = authsDataAccess.createAuth(user.username());
 
         assertNotNull(actualAuth);
+    }
+
+    @Test
+    @DisplayName("Failed Create Auth")
+    void failedCreateAuth() throws DataAccessException{
+        var user = new UserData("newUser", "strongPassword", "advancedEmail@gmail.com");
+        var user2 = new UserData("newUser2", "strongPassword", "advancedEmail@gmail.com");
+        AuthData actualAuth = authsDataAccess.createAuth(user.username());
+        AuthData actualAuth2 = authsDataAccess.createAuth(user2.username());
+
+        assertNotEquals(actualAuth2, actualAuth);
     }
 
     @Test
@@ -113,6 +148,17 @@ public class dataAccessTestsSQL {
         AuthData actualAuth = authsDataAccess.getAuth(expectedAuth.authToken());
 
         assertEquals(expectedAuth, actualAuth);
+    }
+
+    @Test
+    @DisplayName("Failed Get Auth")
+    void failedGetAuth() throws DataAccessException{
+        var user = new UserData("newUser", "strongPassword", "advancedEmail@gmail.com");
+        usersDataAccess.createUser(user);
+
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> authsDataAccess.getAuth("hello"));
+
+        assertEquals(401, ex.statusCode());
     }
 
     @Test
@@ -128,6 +174,16 @@ public class dataAccessTestsSQL {
         var actual = authsDataAccess.getAuths();
 
         assertFalse(actual.containsValue(deletedAuth));
+    }
+
+    @Test
+    @DisplayName("Failed Delete Auth")
+    void failedDeleteAuth() throws DataAccessException{
+        var user = new UserData("newUser", "strongPassword", "advancedEmail@gmail.com");
+        authsDataAccess.createAuth(user.username());
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> authsDataAccess.deleteAuth("hello"));
+
+        assertEquals(401, ex.statusCode());
     }
 
     @Test
@@ -163,10 +219,24 @@ public class dataAccessTestsSQL {
     }
 
     @Test
+    @DisplayName("Failed Get All Auths")
+    void failedGetAllAuths() throws DataAccessException{
+        var actual = authsDataAccess.getAuths();
+        assertEquals(0, actual.size());
+    }
+
+    @Test
     @DisplayName("Successful Create Game")
     void createGame() throws DataAccessException{
         gamesDataAccess.createGame("Fun");
         assertNotNull(gamesDataAccess.getGame(1));
+    }
+
+    @Test
+    @DisplayName("Failed Create Game")
+    void failedCreateGame() throws DataAccessException{
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> gamesDataAccess.createGame(null));
+        assertEquals(500, ex.statusCode());
     }
 
     @Test
@@ -186,12 +256,26 @@ public class dataAccessTestsSQL {
     }
 
     @Test
+    @DisplayName("Failed Get All Games")
+    void failedGetAllGames() throws DataAccessException{
+        var actual = gamesDataAccess.getAllGames();
+        assertEquals(0, actual.size());
+    }
+
+    @Test
     @DisplayName("Successful Get Game")
     void getGame() throws DataAccessException{
         var game1 = gamesDataAccess.createGame("Fun");
         var actualGame = gamesDataAccess.getGame(1);
 
         assertEquals(game1, actualGame);
+    }
+
+    @Test
+    @DisplayName("Failed Get Game")
+    void failedGetGame() throws DataAccessException{
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> gamesDataAccess.getGame(1));
+        assertEquals(400, ex.statusCode());
     }
 
     @Test
@@ -203,6 +287,15 @@ public class dataAccessTestsSQL {
         var actualGame = gamesDataAccess.getGame(1);
 
         assertEquals(game, actualGame);
+    }
+
+    @Test
+    @DisplayName("Failed Update Games")
+    void failedUpdateGame() throws DataAccessException{
+        GameData game = new GameData(1, "whiteUser", null, null, new ChessGame());
+        gamesDataAccess.createGame("Fun");
+        DataAccessException ex = assertThrows(DataAccessException.class, () -> gamesDataAccess.updateGame(game));
+        assertEquals(500, ex.statusCode());
     }
 
     @Test
