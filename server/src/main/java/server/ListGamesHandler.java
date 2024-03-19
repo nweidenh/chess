@@ -20,7 +20,7 @@ public class ListGamesHandler {
         try{
             String authToken = new Gson().fromJson(req.headers("authorization"), String.class);
             var list = gameService.lstGames(authToken).toArray();
-            return new Gson().toJson(Map.of("games",list));
+            return new Gson().toJson(Map.of("game",list));
         } catch (DataAccessException ex){
             new ExceptionHandler(ex, req, res);
             Error exceptionMessage = new Error(ex.getMessage());

@@ -36,8 +36,8 @@ public class ServerFacade {
         var path = "/game";
         record listGameResponse(GameData[] game) {
         }
-        var response = this.makeRequest("GET", path, null, listGameResponse.class, null);
-        return response.game;
+        var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
+        return response.game();
     }
 
     public int createGame(GameData gameName) throws ResponseException{
@@ -46,10 +46,9 @@ public class ServerFacade {
         return response.gameID();
     }
 
-    public int joinGame(JoinGameRequest gameToJoin) throws ResponseException{
+    public void joinGame(JoinGameRequest gameToJoin) throws ResponseException{
         var path = "/game";
-        var response = this.makeRequest("POST", path, gameToJoin, CreateGameResponse.class, authToken);
-        return response.gameID();
+        this.makeRequest("PUT", path, gameToJoin, null, authToken);
     }
 
     public void deleteAllGames() throws ResponseException {

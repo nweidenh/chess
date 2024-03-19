@@ -50,7 +50,7 @@ public class PreLogin {
                 username = params[0];
                 password = params[1];
                 authToken = server.login(new UserData(username, password, null));
-                return String.format("You registered as %s.", username);
+                return String.format("You logged in as %s.", username);
             }
             throw new ResponseException(400, "Expected: <USERNAMER> <PASSWORD>");
         }

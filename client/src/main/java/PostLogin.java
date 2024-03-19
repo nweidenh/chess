@@ -3,17 +3,16 @@ import model.GameData;
 import model.JoinGameRequest;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 import com.google.gson.Gson;
 
 public class PostLogin {
 
-    private String username = null;
-    private String password = null;
-    private String email = null;
     private final ServerFacade server;
     private final String serverUrl;
+    private Map<Integer, GameData> gamesListed;
 
     public PostLogin(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -41,9 +40,19 @@ public class PostLogin {
     public String listGames() throws ResponseException {
         var games = server.listGames();
         var result = new StringBuffer();
-        var gson = new Gson();
+        var i = 1;
         for (var game : games){
-            result.append(gson.toJson(game)).append('\n');
+            result.append("Game Number ").append(i).append( " -> Name: ").append(game.gameName());
+            if (game.whiteUsername() != null){
+                result.append(" White Player- ").append(game.whiteUsername());
+            }if (game.blackUsername() != null){
+                result.append(" Black Player- ").append(game.blackUsername());
+            }if (game.whiteUsername() == null && game.blackUsername() == null){
+                result.append(", There are no users playing this game");
+            }if (games.length > i){
+                result.append('\n');
+            } gamesListed.put(i, game);
+            i += 1;
         }
         return result.toString();
     }
@@ -59,10 +68,14 @@ public class PostLogin {
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
             JoinGameRequest gameToJoin = new JoinGameRequest(params[1], Integer.parseInt(params[0]));
-            var gameID = server.joinGame(gameToJoin);
-            return "you created game " + params[0] + " with gameID " + gameID;
+            server.joinGame(gameToJoin);
+            return "you joined game " + params[0];
+        } if (params.length == 1){
+            JoinGameRequest gameToJoin = new JoinGameRequest(null, Integer.parseInt(params[0]));
+            server.joinGame(gameToJoin);
+            return "you joined game " + params[0];
         }
-        throw new ResponseException(400, "Expected: <NAME>");
+        throw new ResponseException(400, "Expected: listed game number");
     }
 
 

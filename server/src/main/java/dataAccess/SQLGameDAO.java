@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
+import java.sql.*;
 
 public class SQLGameDAO  implements GameDAO{
 
@@ -31,8 +32,7 @@ public class SQLGameDAO  implements GameDAO{
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        var gameInstance = rs.getString("json");
-                        result.add(new Gson().fromJson(gameInstance, GameData.class));
+                        result.add(readGame(rs));
                     }
                 }
             }
@@ -49,8 +49,7 @@ public class SQLGameDAO  implements GameDAO{
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        var json = rs.getString("json");
-                        return new Gson().fromJson(json, GameData.class);
+                        return readGame(rs);
                     } else {
                         throw new DataAccessException(400, "Error: unauthorized");
                     }
@@ -72,6 +71,13 @@ public class SQLGameDAO  implements GameDAO{
         executeUpdate(statement);
     };
 
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var id = rs.getInt("gameID");
+        var json = rs.getString("json");
+        var game = new Gson().fromJson(json, GameData.class);
+        return game.changeGameID(id);
+    }
+
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
@@ -87,7 +93,6 @@ public class SQLGameDAO  implements GameDAO{
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     int myint = rs.getInt(1);
-                    System.out.println(myint);
                     return myint;
                 }
 
