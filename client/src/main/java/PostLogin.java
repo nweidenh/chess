@@ -3,6 +3,7 @@ import model.GameData;
 import model.JoinGameRequest;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ public class PostLogin {
 
     private final ServerFacade server;
     private final String serverUrl;
-    private Map<Integer, GameData> gamesListed;
+    private final Map<Integer, GameData> gamesListed = new HashMap<>();
 
     public PostLogin(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -29,7 +30,7 @@ public class PostLogin {
                 case "logout" -> logout();
                 case "join" -> joinGame(params);
                 case "create" -> createGame(params);
-                case "quit" -> "quit";
+                case "observe" -> observeGame(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -60,20 +61,32 @@ public class PostLogin {
     public String createGame(String... params) throws ResponseException {
         if (params.length <= 1) {
             GameData game = new GameData(0, null, null, params[0], null);
-            var gameID = server.createGame(game);
-            return "you created game " + params[0] + " with gameID " + gameID;
+            server.createGame(game);
+            return "You created game " + params[0];
         }
         throw new ResponseException(400, "Expected: <NAME>");
     }
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
-            JoinGameRequest gameToJoin = new JoinGameRequest(params[1], Integer.parseInt(params[0]));
+            GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
+            JoinGameRequest gameToJoin = new JoinGameRequest(params[1], joiningThisGame.gameID());
             server.joinGame(gameToJoin);
-            return "you joined game " + params[0];
+            return "You joined game " + params[0];
         } if (params.length == 1){
-            JoinGameRequest gameToJoin = new JoinGameRequest(null, Integer.parseInt(params[0]));
+            GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
+            JoinGameRequest gameToJoin = new JoinGameRequest(null, joiningThisGame.gameID());
             server.joinGame(gameToJoin);
-            return "you joined game " + params[0];
+            return "You joined game " + params[0];
+        }
+        throw new ResponseException(400, "Expected: listed game number");
+    }
+
+    public String observeGame(String... params) throws ResponseException {
+        if (params.length == 1){
+            GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
+            JoinGameRequest gameToJoin = new JoinGameRequest(null, joiningThisGame.gameID());
+            server.joinGame(gameToJoin);
+            return "You are observing game " + params[0];
         }
         throw new ResponseException(400, "Expected: listed game number");
     }
@@ -91,7 +104,6 @@ public class PostLogin {
                         join <ID> [WHITE|BLACK|<empty>] - a game
                         observe <ID> - a game
                         logout - when you are done
-                        quit - playing chess
                         help - with possible commands
                         """;
     }

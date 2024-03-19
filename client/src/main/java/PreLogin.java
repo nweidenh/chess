@@ -69,4 +69,8 @@ public class PreLogin {
                 return Boolean.TRUE;
             } return Boolean.FALSE;
         }
+
+        public void nullifyAuth(){
+            this.authToken = null;
+        }
 }

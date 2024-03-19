@@ -1,5 +1,6 @@
 import ui.EscapeSequences;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Repl{
@@ -20,22 +21,26 @@ public class Repl{
         while (!result.equals("quit")) {
             printPrompt();
             String line = scanner.nextLine();
-            if (preClient.hasAuth()){
-                try {
-                    result = postClient.eval(line);
-                    System.out.print(result);
-                } catch (Throwable e) {
-                    var msg = e.toString();
-                    System.out.print(msg);
+            try {
+                result = preClient.eval(line);
+                System.out.print(result);
+                while (preClient.hasAuth()){
+                    printPrompt();
+                    line = scanner.nextLine();
+                    try {
+                        result = postClient.eval(line);
+                        System.out.print(result);
+                        if(Objects.equals(result, "You logged out")){
+                            preClient.nullifyAuth();
+                        }
+                    } catch (Throwable e) {
+                        var msg = e.toString();
+                        System.out.print(msg);
+                    }
                 }
-            } else {
-                try {
-                    result = preClient.eval(line);
-                    System.out.print(result);
-                } catch (Throwable e) {
-                    var msg = e.toString();
-                    System.out.print(msg);
-                }
+            } catch (Throwable e) {
+                var msg = e.toString();
+                System.out.print(msg);
             }
         }
         System.out.println();
