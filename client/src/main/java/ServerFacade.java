@@ -42,7 +42,7 @@ public class ServerFacade {
 
     public int createGame(GameData gameName) throws ResponseException{
         var path = "/game";
-        var response = this.makeRequest("POST", path, gameName, Integer.class, authToken);
+        var response = this.makeRequest("POST", path, gameName, int.class, authToken);
         return response;
     }
 

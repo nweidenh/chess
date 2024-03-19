@@ -26,7 +26,6 @@ public class GameService {
     public CreateGameResponse createGame(String auth, String gameName) throws DataAccessException{
         authDataAccess.getAuth(auth);
         GameData createdGame = gameDataAccess.createGame(gameName);
-        new CreateGameResponse(createdGame.gameID());
         return new CreateGameResponse(createdGame.gameID());
     }
 

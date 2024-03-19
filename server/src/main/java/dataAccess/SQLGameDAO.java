@@ -2,32 +2,26 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.createGameRequest;
 import model.GameData;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Random;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class SQLGameDAO  implements GameDAO{
-    private Random nextGameIDGenerator = new Random();
 
     public SQLGameDAO() throws DataAccessException{
         configureDatabase();
     }
     public GameData createGame (String gameName) throws DataAccessException{
-        var statement = "INSERT INTO Games (gameID, whiteUsername, blackUsername, gameName, game, json) VALUES (?, ?, ?, ?, ?, ?)";
-        int randomNumber = nextGameIDGenerator.nextInt();
-        GameData createdGame = new GameData(randomNumber, null, null, gameName, new ChessGame());
+        var statement = "INSERT INTO Games (whiteUsername, blackUsername, gameName, game, json) VALUES (?, ?, ?, ?, ?)";
+        GameData createdGame = new GameData(0, null, null, gameName, new ChessGame());
         var json = new Gson().toJson(createdGame);
-        executeUpdate(statement, createdGame.gameID(), createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
-        return createdGame;
+        var newID = executeUpdate(statement, createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
+        return createdGame.changeGameID(newID);
     }
 
     public Collection<GameData> getAllGames () throws DataAccessException{
@@ -92,7 +86,9 @@ public class SQLGameDAO  implements GameDAO{
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    int myint = rs.getInt(1);
+                    System.out.println(myint);
+                    return myint;
                 }
 
                 return 0;
@@ -120,8 +116,7 @@ public class SQLGameDAO  implements GameDAO{
               gameName varchar(256) NOT NULL,
               game longtext,
               json TEXT DEFAULT NULL,
-              PRIMARY KEY (gameID),
-              INDEX(gameName)
+              PRIMARY KEY (gameID)
             )""", """
             CREATE TABLE IF NOT EXISTS Auths  (
               authToken varchar(256) NOT NULL,
@@ -130,7 +125,8 @@ public class SQLGameDAO  implements GameDAO{
               PRIMARY KEY (authToken),
               INDEX(username)
             )
-            """
+            """, """
+            ALTER TABLE Games MODIFY gameID int NOT NULL AUTO_INCREMENT"""
     };
 
     private void configureDatabase() throws DataAccessException {
