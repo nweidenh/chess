@@ -1,8 +1,10 @@
 import chess.ChessGame;
 import model.GameData;
-import model.UserData;
+import model.JoinGameRequest;
 
 import java.util.Arrays;
+import java.util.Objects;
+
 import com.google.gson.Gson;
 
 public class PostLogin {
@@ -26,7 +28,7 @@ public class PostLogin {
             return switch (cmd) {
                 case "list" -> listGames();
                 case "logout" -> logout();
-                case "join" -> joinGame();
+                case "join" -> joinGame(params);
                 case "create" -> createGame(params);
                 case "quit" -> "quit";
                 default -> help();
@@ -54,8 +56,13 @@ public class PostLogin {
         }
         throw new ResponseException(400, "Expected: <NAME>");
     }
-    public String joinGame() throws ResponseException {
-        return null;
+    public String joinGame(String... params) throws ResponseException {
+        if (params.length == 2) {
+            JoinGameRequest gameToJoin = new JoinGameRequest(params[1], Integer.parseInt(params[0]));
+            var gameID = server.joinGame(gameToJoin);
+            return "you created game " + params[0] + " with gameID " + gameID;
+        }
+        throw new ResponseException(400, "Expected: <NAME>");
     }
 
 

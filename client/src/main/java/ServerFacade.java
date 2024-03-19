@@ -42,8 +42,14 @@ public class ServerFacade {
 
     public int createGame(GameData gameName) throws ResponseException{
         var path = "/game";
-        var response = this.makeRequest("POST", path, gameName, int.class, authToken);
-        return response;
+        var response = this.makeRequest("POST", path, gameName, CreateGameResponse.class, authToken);
+        return response.gameID();
+    }
+
+    public int joinGame(JoinGameRequest gameToJoin) throws ResponseException{
+        var path = "/game";
+        var response = this.makeRequest("POST", path, gameToJoin, CreateGameResponse.class, authToken);
+        return response.gameID();
     }
 
     public void deleteAllGames() throws ResponseException {
