@@ -52,7 +52,8 @@ public class ServerFacade {
 
     public void joinGame(JoinGameRequest gameToJoin) throws ResponseException {
         var path = "/game";
-        this.makeRequest("PUT", path, gameToJoin, null, authToken);
+        JoinGameRequest freshGameToJoin = gameToJoin.makeUpperCase();
+        this.makeRequest("PUT", path, freshGameToJoin, null, authToken);
     }
 
     public void deleteAll() throws ResponseException {

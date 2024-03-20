@@ -1,6 +1,5 @@
 package clientOpps;
 
-import clientOpps.ServerFacade;
 import model.GameData;
 import model.JoinGameRequest;
 
@@ -65,6 +64,7 @@ public class PostLogin {
         }
         throw new ResponseException(400, "Expected: <NAME>");
     }
+
     public String joinGame(String... params) throws ResponseException {
         if (params.length == 2) {
             GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
@@ -89,7 +89,6 @@ public class PostLogin {
         }
         throw new ResponseException(400, "Expected: game number");
     }
-
 
     public String logout() throws ResponseException {
         server.logout();
