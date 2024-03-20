@@ -58,6 +58,7 @@ public class ServerFacade {
     public void deleteAll() throws ResponseException {
         var path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
+        authToken = null;
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, Object header) throws ResponseException {
@@ -111,5 +112,9 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 }
