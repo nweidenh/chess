@@ -19,7 +19,9 @@ public class SQLGameDAO  implements GameDAO{
     }
     public GameData createGame (String gameName) throws DataAccessException{
         var statement = "INSERT INTO Games (whiteUsername, blackUsername, gameName, game, json) VALUES (?, ?, ?, ?, ?)";
-        GameData createdGame = new GameData(0, null, null, gameName, new ChessGame());
+        ChessGame chessToInsert = new ChessGame();
+        chessToInsert.getBoard().resetBoard();
+        GameData createdGame = new GameData(0, null, null, gameName, chessToInsert);
         var json = new Gson().toJson(createdGame);
         var newID = executeUpdate(statement, createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
         return createdGame.changeGameID(newID);

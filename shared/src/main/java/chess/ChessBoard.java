@@ -1,6 +1,9 @@
 package chess;
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import ui.EscapeSequences;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -92,17 +95,93 @@ public class ChessBoard {
     }
 
     public String toString(){
+        System.out.println(EscapeSequences.SET_BG_COLOR_BLACK);
         String retString = "";
+        retString += "\n \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A\n";
+        int rowNum = 8;
         for(int col = 0; col < boardSquares.length; col++) {
+            retString = retString + rowNum + " |";
             for (int row = 0; row < boardSquares.length; row++) {
                 if (boardSquares[col][row] == null){
-                    retString += "null,";
-                }else {
-                    retString += boardSquares[col][row].toString() + ",";
+                    retString += "\u2001\u2005\u200A|";
+                }else if(boardSquares[col][row].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        retString += EscapeSequences.WHITE_PAWN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        retString += EscapeSequences.WHITE_QUEEN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                        retString += EscapeSequences.WHITE_KING + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        retString += EscapeSequences.WHITE_KNIGHT + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        retString += EscapeSequences.WHITE_ROOK + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        retString += EscapeSequences.WHITE_BISHOP + "|";
+                    }
+                }else{
+                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        retString += EscapeSequences.BLACK_PAWN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        retString += EscapeSequences.BLACK_QUEEN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                        retString += EscapeSequences.BLACK_KING + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        retString += EscapeSequences.BLACK_KNIGHT + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        retString += EscapeSequences.BLACK_ROOK + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        retString += EscapeSequences.BLACK_BISHOP + "|";
+                    }
                 }
             }
-            retString += "\n";
-        }
+            retString = retString + " " + rowNum + "\n";
+            rowNum -= 1;
+        } retString += " \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A";;
+        return retString;
+    }
+    public String toStringFlipped(){
+        System.out.println(EscapeSequences.SET_BG_COLOR_BLACK);
+        String retString = "";
+        retString += "\n \u2001\u2005\u200Ah\u2001\u2005\u200Ag\u2001\u2005\u200Af\u2001\u2005\u200Ae\u2001\u2005\u200Ad\u2001\u2005\u200Ac\u2001\u2005\u200Ab\u2001\u2005\u200Aa\u2001\u2005\u200A\n";
+        int rowNum = 1;
+        for(int col = boardSquares.length - 1; col > -1; col--) {
+            retString = retString + rowNum + " |";
+            for (int row = boardSquares.length - 1; row > -1; row--) {
+                if (boardSquares[col][row] == null){
+                    retString += "\u2001\u2005\u200A|";
+                }else if(boardSquares[col][row].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        retString += EscapeSequences.WHITE_PAWN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        retString += EscapeSequences.WHITE_QUEEN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                        retString += EscapeSequences.WHITE_KING + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        retString += EscapeSequences.WHITE_KNIGHT + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        retString += EscapeSequences.WHITE_ROOK + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        retString += EscapeSequences.WHITE_BISHOP + "|";
+                    }
+                }else{
+                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        retString += EscapeSequences.BLACK_PAWN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        retString += EscapeSequences.BLACK_QUEEN + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                        retString += EscapeSequences.BLACK_KING + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        retString += EscapeSequences.BLACK_KNIGHT + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        retString += EscapeSequences.BLACK_ROOK + "|";
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        retString += EscapeSequences.BLACK_BISHOP + "|";
+                    }
+                }
+            }
+            retString = retString + " " + rowNum + "\n";
+            rowNum += 1;
+        } retString += " \u2001\u2005\u200Ah\u2001\u2005\u200Ag\u2001\u2005\u200Af\u2001\u2005\u200Ae\u2001\u2005\u200Ad\u2001\u2005\u200Ac\u2001\u2005\u200Ab\u2001\u2005\u200Aa\u2001\u2005\u200A";;
         return retString;
     }
 

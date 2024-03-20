@@ -32,7 +32,6 @@ public class GameService {
     public void joinGame(String authToken, JoinGameRequest game) throws DataAccessException{
         AuthData userAuth = authDataAccess.getAuth(authToken);
         GameData joinThisGame = gameDataAccess.getGame(game.gameID());
-        String color = game.playerColor();
         if(!Objects.equals(game.playerColor(), "white") && !Objects.equals(game.playerColor(), "black") && game.playerColor() != null){
             throw new DataAccessException(400, "Error: bad request");
         }
