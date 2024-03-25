@@ -1,6 +1,5 @@
 package clientOpps;
 
-import clientOpps.ServerFacade;
 import model.UserData;
 
 import java.util.Arrays;
