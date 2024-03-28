@@ -1,7 +1,10 @@
 package clientOpps;
 
+import dataAccess.DataAccessException;
 import model.GameData;
 import model.JoinGameRequest;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,10 +15,14 @@ public class PostLogin {
     private final ServerFacade server;
     private final String serverUrl;
     private final Map<Integer, GameData> gamesListed = new HashMap<>();
+    private WebSocketFacade ws;
+    private final NotificationHandler notificationHandler;
+    public Boolean inWs = false;
 
-    public PostLogin(String serverUrl) {
+    public PostLogin(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -31,7 +38,7 @@ public class PostLogin {
                 case "observe" -> observeGame(params);
                 default -> help();
             };
-        } catch (ResponseException ex) {
+        } catch (ResponseException | DataAccessException ex) {
             return ex.getMessage();
         }
     }
@@ -65,26 +72,29 @@ public class PostLogin {
         throw new ResponseException(400, "Expected: <NAME>");
     }
 
-    public String joinGame(String... params) throws ResponseException {
+    public String joinGame(String... params) throws ResponseException, DataAccessException {
         if (params.length == 2) {
             GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
             JoinGameRequest gameToJoin = new JoinGameRequest(params[1], joiningThisGame.gameID());
             server.joinGame(gameToJoin);
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.joinGame(gameToJoin);
+            inWs = true;
             return "You joined game " + params[0] + "\nThis is the current state of the game" + joiningThisGame.game().getBoard().toString() + "\nand flipped it is" + joiningThisGame.game().getBoard().toStringFlipped();
         } if (params.length == 1){
-            GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
-            JoinGameRequest gameToJoin = new JoinGameRequest(null, joiningThisGame.gameID());
-            server.joinGame(gameToJoin);
-            return "You joined game " + params[0] + "\nThis is the current state of the game" + joiningThisGame.game().getBoard().toString() + "\nand flipped it is" + joiningThisGame.game().getBoard().toStringFlipped();
+            return observeGame(params);
         }
         throw new ResponseException(400, "Expected: game number and a desired color");
     }
 
-    public String observeGame(String... params) throws ResponseException {
+    public String observeGame(String... params) throws ResponseException, DataAccessException {
         if (params.length == 1){
             GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
             JoinGameRequest gameToJoin = new JoinGameRequest(null, joiningThisGame.gameID());
             server.joinGame(gameToJoin);
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.joinObvGame(gameToJoin);
+            inWs = true;
             return "You are observing game " + params[0] + "\nThis is the current state of the game" + joiningThisGame.game().getBoard().toString() + "\nand flipped it is" + joiningThisGame.game().getBoard().toStringFlipped();
         }
         throw new ResponseException(400, "Expected: game number");

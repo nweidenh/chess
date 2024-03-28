@@ -1,17 +1,23 @@
 package clientOpps;
 
-import ui2.EscapeSequences2;
+import static ui2.EscapeSequences2.*;
+
+import dataAccess.DataAccessException;
+import webSocketMessages.serverMessages.Notification;
+import websocket.NotificationHandler;
 
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Repl{
+public class Repl implements NotificationHandler{
     private final PreLogin preClient;
     private final PostLogin postClient;
+    private final GameUi webSocket;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl) throws DataAccessException {
         preClient = new PreLogin(serverUrl);
-        postClient = new PostLogin(serverUrl);
+        postClient = new PostLogin(serverUrl, this);
+        webSocket = new GameUi(serverUrl, this);
     }
 
     public void run() {
@@ -34,6 +40,19 @@ public class Repl{
                         System.out.print(result);
                         if(Objects.equals(result, "You logged out")){
                             preClient.nullifyAuth();
+                        } while(postClient.inWs){
+                            printPrompt();
+                            line = scanner.nextLine();
+                            try {
+                                result = webSocket.eval(line);
+                                System.out.println(result);
+                                if (Objects.equals(result, "You left the game")){
+                                    postClient.inWs = false;
+                                }
+                            } catch (Throwable e) {
+                                var msg = e.toString();
+                                System.out.print(msg);
+                            }
                         }
                     } catch (Throwable e) {
                         var msg = e.toString();
@@ -49,7 +68,12 @@ public class Repl{
     }
 
     private void printPrompt() {
-        System.out.print("\n" + EscapeSequences2.RESET_BG_COLOR + ">>> " + EscapeSequences2.SET_BG_COLOR_BLACK);
+        System.out.print("\n" + RESET_BG_COLOR + ">>> " + SET_BG_COLOR_BLACK);
     }
 
+    @Override
+    public void notify(Notification notification) {
+        System.out.println(SET_TEXT_COLOR_GREEN + notification.getMessage());
+        printPrompt();
+    }
 }

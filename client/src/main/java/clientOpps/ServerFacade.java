@@ -10,7 +10,6 @@ public class ServerFacade {
 
     private final String serverUrl;
     private static String authToken = null;
-    private String whereToHost;
 
     public ServerFacade(String url) {
         serverUrl = url;
