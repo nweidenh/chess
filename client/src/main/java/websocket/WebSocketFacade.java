@@ -43,20 +43,21 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        System.out.println("WebSocket connection established.");
     }
 
-    public void joinGame(JoinGameRequest gameToJoin) throws DataAccessException {
+    public void joinGame(JoinGameRequest gameToJoin, String authToken) throws DataAccessException {
         try {
-            var playerToJoin = new JoinPlayer(null, gameToJoin.gameID(), gameToJoin.getTeamColor());
+            var playerToJoin = new JoinPlayer(authToken, gameToJoin.gameID(), gameToJoin.getTeamColor());
             this.session.getBasicRemote().sendText(new Gson().toJson(playerToJoin));
         } catch (IOException ex) {
             throw new DataAccessException(500, ex.getMessage());
         }
     }
 
-    public void joinObvGame(JoinGameRequest gameToJoin) throws DataAccessException {
+    public void joinObvGame(JoinGameRequest gameToJoin, String authToken) throws DataAccessException {
         try {
-            var playerToJoin = new JoinObserver(null, gameToJoin.gameID());
+            var playerToJoin = new JoinObserver(authToken, gameToJoin.gameID());
             this.session.getBasicRemote().sendText(new Gson().toJson(playerToJoin));
         } catch (IOException ex) {
             throw new DataAccessException(500, ex.getMessage());

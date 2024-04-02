@@ -36,6 +36,8 @@ public class Repl implements NotificationHandler{
                     printPrompt();
                     line = scanner.nextLine();
                     try {
+                        postClient.authToken = preClient.getAuthToken();
+                        webSocket.authToken = preClient.getAuthToken();
                         result = postClient.eval(line);
                         System.out.print(result);
                         if(Objects.equals(result, "You logged out")){
@@ -73,7 +75,7 @@ public class Repl implements NotificationHandler{
 
     @Override
     public void notify(Notification notification) {
-        System.out.println(SET_TEXT_COLOR_GREEN + notification.getMessage());
+        System.out.println(notification.getMessage());
         printPrompt();
     }
 }

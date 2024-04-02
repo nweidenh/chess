@@ -10,6 +10,7 @@ public class GameUi {
     private final String serverUrl;
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
+    public String authToken = null;
 
     public GameUi(String serverUrl, NotificationHandler notificationHandler) throws DataAccessException {
         ws = new WebSocketFacade(serverUrl, notificationHandler);
@@ -51,7 +52,7 @@ public class GameUi {
         return null;
     }
 
-    public String highlightMoves(){
+    public String highlightMoves(String... params){
         return null;
     }
 

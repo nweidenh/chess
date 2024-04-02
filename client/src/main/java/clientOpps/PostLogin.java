@@ -18,6 +18,7 @@ public class PostLogin {
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
     public Boolean inWs = false;
+    public String authToken = null;
 
     public PostLogin(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -78,7 +79,7 @@ public class PostLogin {
             JoinGameRequest gameToJoin = new JoinGameRequest(params[1], joiningThisGame.gameID());
             server.joinGame(gameToJoin);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.joinGame(gameToJoin);
+            ws.joinGame(gameToJoin, authToken);
             inWs = true;
             return "You joined game " + params[0] + "\nThis is the current state of the game" + joiningThisGame.game().getBoard().toString() + "\nand flipped it is" + joiningThisGame.game().getBoard().toStringFlipped();
         } if (params.length == 1){
@@ -93,7 +94,7 @@ public class PostLogin {
             JoinGameRequest gameToJoin = new JoinGameRequest(null, joiningThisGame.gameID());
             server.joinGame(gameToJoin);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.joinObvGame(gameToJoin);
+            ws.joinObvGame(gameToJoin, authToken);
             inWs = true;
             return "You are observing game " + params[0] + "\nThis is the current state of the game" + joiningThisGame.game().getBoard().toString() + "\nand flipped it is" + joiningThisGame.game().getBoard().toStringFlipped();
         }

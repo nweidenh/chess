@@ -8,27 +8,43 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<Integer, Connection> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
 
     public void add(Integer gameID, String authToken, Session session) {
         var connection = new Connection(authToken, session);
-        connections.put(gameID, connection);
+        if(connections.get(gameID) != null){
+            ArrayList<Connection> conList = connections.get(gameID);
+            conList.add(connection);
+            connections.put(gameID, conList);
+        } else {
+            ArrayList<Connection> conList = new ArrayList<>();
+            conList.add(connection);
+            connections.put(gameID, conList);
+        }
     }
 
-    public void remove(String visitorName) {
-        connections.remove(visitorName);
-    }
-
-    public void broadcast(String excludeVisitorName, Notification notification) throws IOException {
+    public void remove(int gameID, String authToken) {
         var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.authToken.equals(excludeVisitorName)) {
-                    c.send(notification.toString());
-                }
-            } else {
+        ArrayList<Connection> conList = connections.get(gameID);
+        for (var c : conList){
+            if (c.authToken == authToken){
                 removeList.add(c);
             }
+        } for (var c : removeList) {
+            conList.remove(c);
+        } connections.put(gameID, conList);
+    }
+
+    public void broadcast(int gameID, String excludeAuthToken, Notification notification) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        for (var c : connections.get(gameID)) {
+                if (c.session.isOpen()) {
+                    if (!c.authToken.equals(excludeAuthToken)) {
+                        c.send(notification.toString());
+                    }
+                } else {
+                    removeList.add(c);
+                }
         }
 
         // Clean up any connections that were left open.

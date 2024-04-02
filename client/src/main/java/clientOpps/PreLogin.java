@@ -74,4 +74,8 @@ public class PreLogin {
         public void nullifyAuth(){
             this.authToken = null;
         }
+
+        public String getAuthToken(){
+            return this.authToken;
+        }
 }

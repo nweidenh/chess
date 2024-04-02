@@ -1,5 +1,7 @@
 package webSocketMessages.serverMessages;
 
+import com.google.gson.Gson;
+
 public class Notification extends ServerMessage{
     protected String message;
 
@@ -15,6 +17,6 @@ public class Notification extends ServerMessage{
 
     @Override
     public String toString() {
-        return "this is a " + serverMessageType.toString() + " type notification: " + message;
+        return new Gson().toJson(this);
     }
 }

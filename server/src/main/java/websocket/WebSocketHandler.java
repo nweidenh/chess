@@ -21,42 +21,52 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
-            case JOIN_PLAYER:
+            case JOIN_PLAYER: {
                 JoinPlayer joinCommand = new Gson().fromJson(message, JoinPlayer.class);
                 joinPlayer(joinCommand.getGameID(), joinCommand.getAuthString(), session);
-            case JOIN_OBSERVER:
+                break;
+            }
+            case JOIN_OBSERVER: {
                 JoinObserver joinObvCommand = new Gson().fromJson(message, JoinObserver.class);
-            case MAKE_MOVE:
+                break;
+            }
+            case MAKE_MOVE: {
                 MakeMove moveCommand = new Gson().fromJson(message, MakeMove.class);
-            case LEAVE:
+                break;
+            }
+            case LEAVE: {
                 Leave leaveCommand = new Gson().fromJson(message, Leave.class);
-                leaveGame(leaveCommand.getAuthString());
-            case RESIGN:
+                leaveGame(leaveCommand.getGameID(), leaveCommand.getAuthString());
+                break;
+            }
+            case RESIGN: {
                 Resign resignCommand = new Gson().fromJson(message, Resign.class);
+                break;
+            }
         }
     }
 
     private void joinPlayer(Integer gameID, String authToken, Session session) throws IOException {
         connections.add(gameID, authToken, session);
-        var message = String.format("%s is in the shop", authToken);
+        var message = String.format("%s joined the game", authToken);
         var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(authToken, notification);
+        connections.broadcast(gameID, authToken, notification);
     }
 
-    private void leaveGame(String authToken) throws IOException {
-        connections.remove(authToken);
-        var message = String.format("%s left the shop", authToken);
+    private void leaveGame(Integer gameID, String authToken) throws IOException {
+        connections.remove(gameID, authToken);
+        var message = String.format("%s left the game", authToken);
         var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(authToken, notification);
+        connections.broadcast(gameID, authToken, notification);
     }
 
-    public void makeNoise(String petName, String sound) throws DataAccessException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new DataAccessException(500, ex.getMessage());
-        }
-    }
+//    public void makeNoise(String petName, String sound) throws DataAccessException {
+//        try {
+//            var message = String.format("%s says %s", petName, sound);
+//            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+//            connections.broadcast("", notification);
+//        } catch (Exception ex) {
+//            throw new DataAccessException(500, ex.getMessage());
+//        }
+//    }
 }
