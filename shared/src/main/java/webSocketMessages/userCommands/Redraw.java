@@ -1,14 +1,12 @@
 package webSocketMessages.userCommands;
 
-import chess.ChessGame;
-
-public class JoinObserver extends  UserGameCommand{
+public class Redraw extends UserGameCommand{
 
     protected Integer gameID;
 
-    public JoinObserver(String authToken, Integer gameID){
+    public Redraw(String authToken, Integer gameID){
         super(authToken);
-        this.commandType = CommandType.JOIN_OBSERVER;
+        this.commandType = UserGameCommand.CommandType.REDRAW;
         this.gameID = gameID;
     }
 

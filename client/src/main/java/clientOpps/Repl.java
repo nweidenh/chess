@@ -3,6 +3,7 @@ package clientOpps;
 import static ui2.EscapeSequences2.*;
 
 import dataAccess.DataAccessException;
+import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import websocket.NotificationHandler;
 
@@ -43,6 +44,7 @@ public class Repl implements NotificationHandler{
                         if(Objects.equals(result, "You logged out")){
                             preClient.nullifyAuth();
                         } while(postClient.inWs){
+                            webSocket.gameID = postClient.gameID;
                             printPrompt();
                             line = scanner.nextLine();
                             try {
@@ -76,6 +78,11 @@ public class Repl implements NotificationHandler{
     @Override
     public void notify(Notification notification) {
         System.out.println(notification.getMessage());
+        printPrompt();
+    }
+    @Override
+    public void notifyLoad(LoadGame loadedGame) {
+        System.out.println(loadedGame.getBoard().toString());
         printPrompt();
     }
 }

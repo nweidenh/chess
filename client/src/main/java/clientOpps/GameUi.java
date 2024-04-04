@@ -1,9 +1,11 @@
 package clientOpps;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class GameUi {
@@ -11,6 +13,7 @@ public class GameUi {
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
     public String authToken = null;
+    public Integer gameID = null;
 
     public GameUi(String serverUrl, NotificationHandler notificationHandler) throws DataAccessException {
         ws = new WebSocketFacade(serverUrl, notificationHandler);
@@ -33,15 +36,19 @@ public class GameUi {
             };
         } catch (DataAccessException | ResponseException ex) {
             return ex.getMessage();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public String redrawGame() throws ResponseException, DataAccessException {
-        return null;
+    public String redrawGame() throws ResponseException, DataAccessException, IOException {
+        ws.redrawBoard(gameID, authToken);
+        return "";
     }
 
-    public String leaveGame(){
-        return null;
+    public String leaveGame() throws DataAccessException {
+        ws.leaveGame(gameID, authToken);
+        return "You left the game";
     }
 
     public String makeMove(String... params){

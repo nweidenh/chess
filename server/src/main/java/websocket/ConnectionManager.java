@@ -5,6 +5,7 @@ import webSocketMessages.serverMessages.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
@@ -25,14 +26,14 @@ public class ConnectionManager {
 
     public void remove(int gameID, String authToken) {
         var removeList = new ArrayList<Connection>();
-        ArrayList<Connection> conList = connections.get(gameID);
-        for (var c : conList){
-            if (c.authToken == authToken){
+        ArrayList<Connection> connectionList = connections.get(gameID);
+        for (var c : connectionList){
+            if (Objects.equals(c.authToken, authToken)){
                 removeList.add(c);
             }
         } for (var c : removeList) {
-            conList.remove(c);
-        } connections.put(gameID, conList);
+            connectionList.remove(c);
+        } connections.put(gameID, connectionList);
     }
 
     public void broadcast(int gameID, String excludeAuthToken, Notification notification) throws IOException {
@@ -45,6 +46,24 @@ public class ConnectionManager {
                 } else {
                     removeList.add(c);
                 }
+        }
+
+        // Clean up any connections that were left open.
+        for (var c : removeList) {
+            connections.remove(c.authToken);
+        }
+    }
+
+    public void sendMessage(int gameID, String authToken, LoadGame notification) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        for (var c : connections.get(gameID)) {
+            if (c.session.isOpen()) {
+                if (c.authToken.equals(authToken)) {
+                    c.send(notification.toString());
+                }
+            } else {
+                removeList.add(c);
+            }
         }
 
         // Clean up any connections that were left open.

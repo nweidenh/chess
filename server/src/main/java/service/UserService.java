@@ -42,4 +42,5 @@ public class UserService {
     public void deleteAll() throws DataAccessException{
         userDataAccess.deleteAllUsers();
     }
+
 }

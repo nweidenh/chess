@@ -34,7 +34,7 @@ public class Server {
         userService = new UserService(usersDataAccess, authsDataAccess, gamesDataAccess);
         authService = new AuthService(usersDataAccess, authsDataAccess, gamesDataAccess);
         gameService = new GameService(usersDataAccess, authsDataAccess, gamesDataAccess);
-        webSocketHandler = new WebSocketHandler();
+        webSocketHandler = new WebSocketHandler(userService, authService, gameService);
     }
 
     public int run(int desiredPort) {

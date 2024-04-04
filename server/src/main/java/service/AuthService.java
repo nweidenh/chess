@@ -3,6 +3,7 @@ package service;
 import model.AuthData;
 import dataAccess.DataAccessException;
 import dataAccess.*;
+import model.UserData;
 
 import java.util.HashMap;
 
@@ -20,6 +21,10 @@ public class AuthService {
 
     public HashMap<String, AuthData> getAuths() throws DataAccessException{
         return authDataAccess.getAuths();
+    }
+
+    public AuthData getAuth(String authToken) throws DataAccessException{
+        return authDataAccess.getAuth(authToken);
     }
 
     //Delete all auth tokens

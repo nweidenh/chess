@@ -1,5 +1,7 @@
 package websocket;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.JoinGameRequest;
@@ -17,7 +19,6 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
 
-
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws DataAccessException {
         try {
             url = url.replace("http", "ws");
@@ -31,8 +32,13 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    Notification notification = new Gson().fromJson(message, Notification.class);
-                    notificationHandler.notify(notification);
+                    if (new Gson().fromJson(message, Notification.class).getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+                        Notification notification = new Gson().fromJson(message, Notification.class);
+                        notificationHandler.notify(notification);
+                    } else if(new Gson().fromJson(message, LoadGame.class).getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+                        LoadGame notification = new Gson().fromJson(message, LoadGame.class);
+                        notificationHandler.notifyLoad(notification);
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -64,7 +70,12 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void leaveGame(String authToken, Integer gameID) throws DataAccessException {
+    public void redrawBoard(Integer gameID, String authToken) throws DataAccessException, IOException {
+        var boardToDraw = new Redraw(authToken, gameID);
+        this.session.getBasicRemote().sendText(new Gson().toJson(boardToDraw));
+    }
+
+    public void leaveGame(Integer gameID, String authToken) throws DataAccessException {
         try {
             var leaveGame = new Leave(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(leaveGame));
