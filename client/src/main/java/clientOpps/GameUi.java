@@ -1,12 +1,13 @@
 package clientOpps;
 
-import chess.ChessGame;
+import chess.*;
 import dataAccess.DataAccessException;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class GameUi {
     private final String serverUrl;
@@ -14,11 +15,14 @@ public class GameUi {
     private final NotificationHandler notificationHandler;
     public String authToken = null;
     public Integer gameID = null;
+    Scanner scanner;
 
     public GameUi(String serverUrl, NotificationHandler notificationHandler) throws DataAccessException {
         ws = new WebSocketFacade(serverUrl, notificationHandler);
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
+
+        this.scanner = new Scanner(System.in);
     }
 
     public String eval(String input) {
@@ -31,7 +35,7 @@ public class GameUi {
                 case "leave" -> leaveGame();
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
-                case "highlight" -> highlightMoves();
+                case "highlight" -> highlightMoves(params);
                 default -> help();
             };
         } catch (DataAccessException | ResponseException ex) {
@@ -51,8 +55,25 @@ public class GameUi {
         return "You left the game";
     }
 
-    public String makeMove(String... params){
-        return null;
+    public String makeMove(String... params) throws DataAccessException {
+        int row = 0;
+        int col = 0;
+        System.out.println("Enter the space of the piece you want to move in this format: rowNumber columnLetter");
+        ChessPosition start = makePositionFromInput();
+        System.out.println("Enter the space that you want to move to in this format: rowNumber columnLetter");
+        ChessPosition end = makePositionFromInput();
+        ws.makeMove(gameID, authToken, new ChessMove(start, end, null));
+        return "";
+    }
+
+    private ChessPosition makePositionFromInput(){
+        int row = 0;
+        int col = 0;
+        String move = scanner.nextLine();
+        var tokens = move.toUpperCase().split(" ");
+        row = Integer.parseInt(tokens[0]);
+        col = tokens[1].charAt(0) - 'A' + 1;
+        return new ChessPosition(row, col);
     }
 
     public String resign(){

@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import model.*;
 import dataAccess.*;
 
@@ -50,6 +51,12 @@ public class GameService {
                 throw new DataAccessException(403, "Error: already taken");
             }
         }
+    }
+
+    public void updateGame(int gameID, ChessGame updatedGame) throws DataAccessException {
+        GameData gameToBeReplaced = getGame(gameID);
+        GameData replacingGameData = gameToBeReplaced.updateBoard(updatedGame);
+        gameDataAccess.updateGame(replacingGameData);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

@@ -1,7 +1,6 @@
 package websocket;
 
-import chess.ChessBoard;
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import org.eclipse.jetty.websocket.api.Session;
@@ -34,7 +33,7 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException, InvalidMoveException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         switch (command.getCommandType()) {
             case JOIN_PLAYER: {
@@ -49,6 +48,7 @@ public class WebSocketHandler {
             }
             case MAKE_MOVE: {
                 MakeMove moveCommand = new Gson().fromJson(message, MakeMove.class);
+                makeMove(moveCommand.getAuthString(), moveCommand.getGameID(), moveCommand.getMove());
                 break;
             }
             case LEAVE: {
@@ -96,6 +96,37 @@ public class WebSocketHandler {
         connections.broadcast(gameID, authToken, notification);
         connections.sendMessage(gameID, authToken, loadGame);
     }
+
+    private void resign(Integer gameID, String authToken) throws IOException, DataAccessException {
+        String username;
+        connections.remove(gameID, authToken);
+        username = authService.getAuth(authToken).username();
+        var message = String.format("%s left the game", username);
+        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(gameID, authToken, notification);
+    }
+
+
+    private void makeMove(String authToken, int gameID, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
+        String username;
+        ChessGame game;
+        ChessGame.TeamColor teamColor = null;
+        username = authService.getAuth(authToken).username();
+        if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+            teamColor = ChessGame.TeamColor.BLACK;
+        } else if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+            teamColor = ChessGame.TeamColor.WHITE;
+        }
+        game = gameService.getGame(gameID).game();
+        game.makeMove(move);
+        gameService.updateGame(gameID, game);
+        var message = String.format("%s player made this move", teamColor);
+        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        connections.broadcast(gameID, authToken, notification);
+        connections.sendMessage(gameID, authToken, loadGame);
+    }
+
 
     private void leaveGame(Integer gameID, String authToken) throws IOException, DataAccessException {
         String username;

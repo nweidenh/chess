@@ -10,10 +10,6 @@ public class Main {
         if (args.length == 1) {
             serverUrl = args[0];
         }
-//        server = new Server();
-//        var port = server.run(8080);
-//        System.out.println("Started test HTTP server on " + port);
-//        var serverUrl = "http://localhost:" + port;
         new Repl(serverUrl).run();
     }
 }

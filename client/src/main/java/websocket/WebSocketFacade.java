@@ -2,6 +2,7 @@ package websocket;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.JoinGameRequest;
@@ -65,6 +66,15 @@ public class WebSocketFacade extends Endpoint {
         try {
             var playerToJoin = new JoinObserver(authToken, gameToJoin.gameID());
             this.session.getBasicRemote().sendText(new Gson().toJson(playerToJoin));
+        } catch (IOException ex) {
+            throw new DataAccessException(500, ex.getMessage());
+        }
+    }
+
+    public void makeMove(int gameID, String authToken, ChessMove moveToMake) throws DataAccessException {
+        try {
+            var moveMake = new MakeMove(authToken, gameID, moveToMake);
+            this.session.getBasicRemote().sendText(new Gson().toJson(moveMake));
         } catch (IOException ex) {
             throw new DataAccessException(500, ex.getMessage());
         }
