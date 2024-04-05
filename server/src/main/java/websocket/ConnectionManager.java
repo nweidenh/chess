@@ -47,10 +47,19 @@ public class ConnectionManager {
                     removeList.add(c);
                 }
         }
-
         // Clean up any connections that were left open.
         for (var c : removeList) {
             connections.remove(c.authToken);
+        }
+    }
+
+    public void broadcastGame(int gameID, String excludeAuthToken, LoadGame notification) throws IOException {
+        for (var c : connections.get(gameID)) {
+            if (c.session.isOpen()) {
+                if (!c.authToken.equals(excludeAuthToken)) {
+                    c.send(notification.toString());
+                }
+            }
         }
     }
 

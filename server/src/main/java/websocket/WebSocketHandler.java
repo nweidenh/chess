@@ -123,8 +123,8 @@ public class WebSocketHandler {
         var message = String.format("%s player made this move", teamColor);
         var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
         var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        connections.broadcast(gameID, authToken, notification);
-        connections.sendMessage(gameID, authToken, loadGame);
+        connections.broadcast(gameID, null, notification);
+        connections.broadcastGame(gameID, null, loadGame);
     }
 
 
