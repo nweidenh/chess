@@ -108,25 +108,34 @@ public class WebSocketHandler {
 
 
     private void makeMove(String authToken, int gameID, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
-        String username;
-        ChessGame game;
-        ChessGame.TeamColor teamColor = null;
-        username = authService.getAuth(authToken).username();
-        if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
-            teamColor = ChessGame.TeamColor.BLACK;
-        } else if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
-            teamColor = ChessGame.TeamColor.WHITE;
+        try {
+            String username;
+            ChessGame game;
+            ChessGame.TeamColor teamColor = null;
+            username = authService.getAuth(authToken).username();
+            if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+                teamColor = ChessGame.TeamColor.BLACK;
+            } else if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+                teamColor = ChessGame.TeamColor.WHITE;
+            }
+            game = gameService.getGame(gameID).game();
+            game.makeMove(move);
+            char column = convertToLetter(move.getStartPosition().getColumn());
+            char column2 = convertToLetter(move.getEndPosition().getColumn());
+            gameService.updateGame(gameID, game);
+            var message = String.format("%s made a move. They went from space %d%c to space %d%c", username, move.getStartPosition().getRow(), column, move.getEndPosition().getRow(), column2);
+            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            connections.broadcast(gameID, null, notification);
+            connections.broadcastGame(gameID, null, loadGame);
+        } catch (InvalidMoveException ex){
+            System.out.println(ex.getMessage());
         }
-        game = gameService.getGame(gameID).game();
-        game.makeMove(move);
-        gameService.updateGame(gameID, game);
-        var message = String.format("%s player made this move", teamColor);
-        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        connections.broadcast(gameID, null, notification);
-        connections.broadcastGame(gameID, null, loadGame);
     }
 
+    private char convertToLetter(int col){
+        return (char) ('A' + col - 1);
+    }
 
     private void leaveGame(Integer gameID, String authToken) throws IOException, DataAccessException {
         String username;
