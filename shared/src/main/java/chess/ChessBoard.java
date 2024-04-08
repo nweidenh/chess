@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import ui2.EscapeSequences2;
 
@@ -96,7 +97,7 @@ public class ChessBoard {
         System.out.println(EscapeSequences2.SET_BG_COLOR_BLACK);
         String retString = "";
         retString += "\n \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A\n";
-        int rowNum = 8;
+        int rowNum = 1;
         for(int col = 0; col < boardSquares.length; col++) {
             retString = retString + rowNum + " |";
             for (int row = 0; row < boardSquares.length; row++) {
@@ -133,7 +134,7 @@ public class ChessBoard {
                 }
             }
             retString = retString + " " + rowNum + "\n";
-            rowNum -= 1;
+            rowNum += 1;
         } retString += " \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A";;
         return retString;
     }
@@ -141,7 +142,7 @@ public class ChessBoard {
         System.out.println(EscapeSequences2.SET_BG_COLOR_BLACK);
         String retString = "";
         retString += "\n \u2001\u2005\u200Ah\u2001\u2005\u200Ag\u2001\u2005\u200Af\u2001\u2005\u200Ae\u2001\u2005\u200Ad\u2001\u2005\u200Ac\u2001\u2005\u200Ab\u2001\u2005\u200Aa\u2001\u2005\u200A\n";
-        int rowNum = 1;
+        int rowNum = 8;
         for(int col = boardSquares.length - 1; col > -1; col--) {
             retString = retString + rowNum + " |";
             for (int row = boardSquares.length - 1; row > -1; row--) {
@@ -178,11 +179,95 @@ public class ChessBoard {
                 }
             }
             retString = retString + " " + rowNum + "\n";
-            rowNum += 1;
+            rowNum -= 1;
         } retString += " \u2001\u2005\u200Ah\u2001\u2005\u200Ag\u2001\u2005\u200Af\u2001\u2005\u200Ae\u2001\u2005\u200Ad\u2001\u2005\u200Ac\u2001\u2005\u200Ab\u2001\u2005\u200Aa\u2001\u2005\u200A";;
         return retString;
     }
 
+    public String highlightSpaces(ArrayList<ChessPosition> toBeHighlighted){
+        System.out.println(EscapeSequences2.SET_BG_COLOR_BLACK);
+        String retString = "";
+        retString += "\n \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A\n";
+        int rowNum = 1;
+        for(int col = 0; col < boardSquares.length; col++) {
+            retString = retString + rowNum + " |";
+            for (int row = 0; row < boardSquares.length; row++) {
+                if (boardSquares[col][row] == null){
+                    if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                        retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + "\u2001\u2005\u200A" + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                    } else{
+                    retString += "\u2001\u2005\u200A|";}
+                }else if(boardSquares[col][row].getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.WHITE_PAWN + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.WHITE_PAWN + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.WHITE_QUEEN + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.WHITE_QUEEN + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.WHITE_KING + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.WHITE_KING + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.WHITE_KNIGHT + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.WHITE_KNIGHT + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.WHITE_ROOK + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.WHITE_ROOK + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.WHITE_BISHOP + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.WHITE_BISHOP + "|";}
+                    }
+                }else{
+                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.BLACK_PAWN + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.BLACK_PAWN + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.BLACK_QUEEN + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.BLACK_QUEEN + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.BLACK_KING + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.BLACK_KING + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.BLACK_KNIGHT + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.BLACK_KNIGHT + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.BLACK_ROOK + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.BLACK_ROOK + "|";}
+                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        if(toBeHighlighted.contains(new ChessPosition(col+1, row+1))){
+                            retString += EscapeSequences2.SET_BG_COLOR_DARK_GREEN + EscapeSequences2.BLACK_BISHOP + EscapeSequences2.SET_BG_COLOR_BLACK + "|";
+                        }
+                        else{retString += EscapeSequences2.BLACK_BISHOP + "|";}
+                    }
+                }
+            }
+            retString = retString + " " + rowNum + "\n";
+            rowNum += 1;
+        } retString += " \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A";;
+        return retString;
+    }
 
     @Override
     public boolean equals(Object o) {

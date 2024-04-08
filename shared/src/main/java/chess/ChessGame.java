@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -67,6 +68,18 @@ public class ChessGame {
             setBoard(originalBoard);
         }
         return verifiedMoves;
+    }
+
+    public String findHighlight(ChessPosition startPosition){
+        Collection<ChessMove> lstOfMoves = validMoves(startPosition);
+        ChessPosition potentialSpace;
+        ArrayList<ChessPosition> lstToHighlight = new ArrayList<>();
+        lstToHighlight.add(startPosition);
+        for (ChessMove move : lstOfMoves){
+            potentialSpace = move.getEndPosition();
+            lstToHighlight.add(potentialSpace);
+        }
+        return board.highlightSpaces(lstToHighlight);
     }
 
     /**

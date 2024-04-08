@@ -1,6 +1,6 @@
 package service;
 
-import chess.ChessGame;
+import chess.*;
 import model.*;
 import dataAccess.*;
 
@@ -61,6 +61,16 @@ public class GameService {
 
     public GameData getGame(int gameID) throws DataAccessException {
         return gameDataAccess.getGame(gameID);
+    }
+
+    public void leaveGame(int gameID, ChessGame.TeamColor teamColor) throws DataAccessException {
+        GameData leftGame = null;
+        if (teamColor == ChessGame.TeamColor.WHITE){
+            leftGame = gameDataAccess.getGame(gameID).changeWhiteUsername(null);
+        } else if (teamColor == ChessGame.TeamColor.BLACK) {
+            leftGame = gameDataAccess.getGame(gameID).changeBlackUsername(null);
+        }
+        gameDataAccess.updateGame(leftGame);
     }
 
     public void deleteAll()throws DataAccessException{

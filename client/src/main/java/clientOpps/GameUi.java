@@ -58,9 +58,9 @@ public class GameUi {
     public String makeMove(String... params) throws DataAccessException {
         int row = 0;
         int col = 0;
-        System.out.println("Enter the space of the piece you want to move in this format: rowNumber columnLetter");
+        System.out.println("Enter the space of the piece you want to move in this format: rowNumber columnLetter (ex 7 a)");
         ChessPosition start = makePositionFromInput();
-        System.out.println("Enter the space that you want to move to in this format: rowNumber columnLetter");
+        System.out.println("Enter the space that you want to move to in this format: rowNumber columnLetter (ex 6 a)");
         ChessPosition end = makePositionFromInput();
         ws.makeMove(gameID, authToken, new ChessMove(start, end, null));
         return "";
@@ -76,22 +76,31 @@ public class GameUi {
         return new ChessPosition(row, col);
     }
 
-    public String resign(){
-        return null;
+    public String resign() throws DataAccessException {
+        System.out.println("Are you sure you want to resign? (yes or no)");
+        String decision = scanner.nextLine();
+        if(decision.equalsIgnoreCase("yes")){
+            ws.resignGame(gameID, authToken);
+            return "";
+        } else {
+            return "You did not resign from the game";
+        }
     }
 
-    public String highlightMoves(String... params){
-        return null;
+    public String highlightMoves(String... params) throws IOException {
+        System.out.println("Enter the space of the piece you want to highlight all potential moves of: rowNumber columnLetter (ex 7 a)");
+        ChessPosition start = makePositionFromInput();
+        ws.highlightMove(gameID, authToken, start);
+        return "";
     }
 
     public String help() {
         return """
                         redraw - redraws the chess board
                         leave - leaves the game
-                        move <ChessMove> - moves a piece from one space to another
+                        move - moves a piece from one space to another
                         resign - forfeit the game
                         highlight - highlights all possible moves that can be made
-                        help - with possible commands
-                        """;
+                        help - with possible commands""";
     }
 }
