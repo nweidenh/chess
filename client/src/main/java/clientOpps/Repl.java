@@ -5,6 +5,7 @@ import static ui2.EscapeSequences2.*;
 import dataAccess.DataAccessException;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.Error;
 import websocket.NotificationHandler;
 
 import java.util.Objects;
@@ -83,6 +84,12 @@ public class Repl implements NotificationHandler{
     @Override
     public void notifyLoad(LoadGame loadedGame) {
         System.out.println(loadedGame.getBoard().toString());
+        printPrompt();
+    }
+
+    @Override
+    public void notifyError(Error errorMessage) {
+        System.out.println(errorMessage);
         printPrompt();
     }
 }

@@ -7,7 +7,10 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.JoinGameRequest;
-import webSocketMessages.serverMessages.*;
+import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.Error;
+import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import javax.websocket.*;
@@ -40,11 +43,14 @@ public class WebSocketFacade extends Endpoint {
                     } else if(new Gson().fromJson(message, LoadGame.class).getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
                         LoadGame notification = new Gson().fromJson(message, LoadGame.class);
                         notificationHandler.notifyLoad(notification);
+                    } else if(new Gson().fromJson(message, Error.class).getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+                        Error notification = new Gson().fromJson(message, Error.class);
+                        notificationHandler.notifyError(notification);
                     }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            notificationHandler.notifyError(new Error (ServerMessage.ServerMessageType.ERROR, ex.getMessage()));
         }
     }
 

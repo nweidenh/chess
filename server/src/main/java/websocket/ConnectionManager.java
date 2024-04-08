@@ -40,19 +40,12 @@ public class ConnectionManager {
     }
 
     public void broadcast(int gameID, String excludeAuthToken, Notification notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
         for (var c : connections.get(gameID)) {
-                if (c.session.isOpen()) {
-                    if (!c.authToken.equals(excludeAuthToken)) {
-                        c.send(notification.toString());
-                    }
-                } else {
-                    removeList.add(c);
+            if (c.session.isOpen()) {
+                if (!c.authToken.equals(excludeAuthToken)) {
+                    c.send(notification.toString());
                 }
-        }
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.authToken);
+            }
         }
     }
 
@@ -68,32 +61,14 @@ public class ConnectionManager {
 
     public void sendMessage(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
         try{
-        var removeList = new ArrayList<Connection>();
         for (var c : connections.get(gameID)) {
             if (c.session.isOpen()) {
                 if (c.authToken.equals(authToken)) {
                     c.send(notification.toString());
                 }
-            } else {
-                removeList.add(c);
             }
-        }
-
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.authToken);
         }} catch (IOException ex){
             throw new DataAccessException(500, "Error in Sending");
-        }
-    }
-
-    public void sendError(int gameID, String authToken, ServerMessage errorMessage) throws IOException {
-        for (var c : connections.get(gameID)) {
-            if (c.session.isOpen()) {
-                if (c.authToken.equals(authToken)) {
-                    c.send(errorMessage.toString());
-                }
-            }
         }
     }
 }

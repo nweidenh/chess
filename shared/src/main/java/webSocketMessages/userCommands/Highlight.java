@@ -21,4 +21,5 @@ public class Highlight extends UserGameCommand{
     public ChessPosition getStart() {
         return start;
     }
+
 }

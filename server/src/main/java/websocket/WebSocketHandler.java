@@ -12,11 +12,9 @@ import service.UserService;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.*;
 import webSocketMessages.serverMessages.*;
-import server.Server;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Timer;
 
 
 @WebSocket
@@ -39,7 +37,7 @@ public class WebSocketHandler {
         switch (command.getCommandType()) {
             case JOIN_PLAYER: {
                 JoinPlayer joinCommand = new Gson().fromJson(message, JoinPlayer.class);
-                joinPlayer(joinCommand.getGameID(), joinCommand.getAuthString(), session);
+                joinPlayer(joinCommand.getGameID(), joinCommand.getAuthString(), session, joinCommand.getPlayerColor());
                 break;
             }
             case JOIN_OBSERVER: {
@@ -74,18 +72,28 @@ public class WebSocketHandler {
         }
     }
 
-    private void joinPlayer(Integer gameID, String authToken, Session session) throws IOException, DataAccessException {
+    private void joinPlayer(Integer gameID, String authToken, Session session, ChessGame.TeamColor color) throws IOException, DataAccessException {
         try {
             String username;
             ChessGame game;
             ChessGame.TeamColor teamColor = null;
             connections.add(gameID, authToken, session);
             username = authService.getAuth(authToken).username();
-            if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+            if (color == null){
+                throw new DataAccessException(500, "No color on join");
+            }
+            if (color == ChessGame.TeamColor.BLACK && !Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+                throw new DataAccessException(500, "Color already in use");
+            } else if (color == ChessGame.TeamColor.BLACK && Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
                 teamColor = ChessGame.TeamColor.BLACK;
-            } else if (Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
-                teamColor = ChessGame.TeamColor.WHITE; }
-            else{
+            }
+            else if (color == ChessGame.TeamColor.WHITE && !Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
+                throw new DataAccessException(500, "Color already in use");
+            }
+            else if (color == ChessGame.TeamColor.WHITE && Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
+                teamColor = ChessGame.TeamColor.WHITE;
+            }
+            else {
                 throw new DataAccessException(500, "Not on either team");
             }
             game = gameService.getGame(gameID).game();
@@ -96,29 +104,35 @@ public class WebSocketHandler {
             connections.sendMessage(gameID, authToken, loadGame);
         }catch (IOException | DataAccessException ex){
             String errorMessage = ex.getMessage();
-            connections.sendMessage(gameID, authToken, new Error(ServerMessage.ServerMessageType.ERROR, errorMessage));
+            var notification = new Error(ServerMessage.ServerMessageType.ERROR, errorMessage);
+            connections.sendMessage(gameID, authToken, notification);
         }
-
     }
 
     private void joinObserver(Integer gameID, String authToken, Session session) throws IOException, DataAccessException {
-        String username;
-        ChessGame game;
-        connections.add(gameID, authToken, session);
-        username = authService.getAuth(authToken).username();
-        game = gameService.getGame(gameID).game();
-        var message = String.format("%s joined the game", username);
-        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        connections.broadcast(gameID, authToken, notification);
-        connections.sendMessage(gameID, authToken, loadGame);
+        try {
+            String username;
+            ChessGame game;
+            connections.add(gameID, authToken, session);
+            username = authService.getAuth(authToken).username();
+            game = gameService.getGame(gameID).game();
+            var message = String.format("%s joined the game", username);
+            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            connections.broadcast(gameID, authToken, notification);
+            connections.sendMessage(gameID, authToken, loadGame);
+        }catch (IOException | DataAccessException ex){
+            String errorMessage = ex.getMessage();
+            var notification = new Error(ServerMessage.ServerMessageType.ERROR, errorMessage);
+            connections.sendMessage(gameID, authToken, notification);
+        }
     }
 
     private void resign(Integer gameID, String authToken) throws IOException, DataAccessException {
         try {
             String username;
             username = authService.getAuth(authToken).username();
-            if (!Objects.equals(gameService.getGame(gameID).blackUsername(), username) && !Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+            if (!Objects.equals(gameService.getGame(gameID).blackUsername(), username) && !Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
                 throw new DataAccessException(500, "Cannot resign as observer");
             }
             var message = String.format("%s resigned from the game", username);
@@ -139,10 +153,15 @@ public class WebSocketHandler {
             username = authService.getAuth(authToken).username();
             if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
                 teamColor = ChessGame.TeamColor.BLACK;
-            } else if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+            } else if (Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
                 teamColor = ChessGame.TeamColor.WHITE;
+            } else {
+                throw new DataAccessException(500, "Are you observing the game? No team color for you");
             }
             game = gameService.getGame(gameID).game();
+            if (game.getBoard().getPiece(move.getStartPosition()).getTeamColor() != teamColor){
+                throw new InvalidMoveException("That isn't your piece");
+            }
             game.makeMove(move);
             char column = convertToLetter(move.getStartPosition().getColumn());
             char column2 = convertToLetter(move.getEndPosition().getColumn());
@@ -163,35 +182,52 @@ public class WebSocketHandler {
     }
 
     private void leaveGame(Integer gameID, String authToken) throws IOException, DataAccessException {
-        String username;
-        ChessGame.TeamColor teamColor = null;
-        connections.remove(gameID, authToken);
-        username = authService.getAuth(authToken).username();
-        if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
-            teamColor = ChessGame.TeamColor.BLACK;
-        } else if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
-            teamColor = ChessGame.TeamColor.WHITE;
-        } gameService.leaveGame(gameID, teamColor);
-        var message = String.format("%s left the game", username);
-        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        var userNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "You left the game");
-        connections.broadcast(gameID, authToken, notification);
-        connections.sendMessage(gameID, authToken, userNotification);
+        try {
+            String username;
+            ChessGame.TeamColor teamColor = null;
+            connections.remove(gameID, authToken);
+            username = authService.getAuth(authToken).username();
+            if (Objects.equals(gameService.getGame(gameID).blackUsername(), username)) {
+                teamColor = ChessGame.TeamColor.BLACK;
+            } else if (Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
+                teamColor = ChessGame.TeamColor.WHITE;
+            }
+            gameService.leaveGame(gameID, teamColor);
+            var message = String.format("%s left the game", username);
+            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(gameID, authToken, notification);
+        } catch (IOException | DataAccessException ex){
+            String errorMessage = ex.getMessage();
+            var notification = new Error(ServerMessage.ServerMessageType.ERROR, errorMessage);
+            connections.sendMessage(gameID, authToken, notification);
+        }
     }
 
     private void redrawBoard(Integer gameID, String authToken) throws DataAccessException, IOException {
-        ChessGame game;
-        game = gameService.getGame(gameID).game();
-        var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        connections.sendMessage(gameID, authToken, loadGame);
+        try {
+            ChessGame game;
+            game = gameService.getGame(gameID).game();
+            var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            connections.sendMessage(gameID, authToken, loadGame);
+        } catch (IOException | DataAccessException ex){
+            String errorMessage = ex.getMessage();
+            var notification = new Error(ServerMessage.ServerMessageType.ERROR, errorMessage);
+            connections.sendMessage(gameID, authToken, notification);
+        }
     }
 
     private void highlightMoves(Integer gameID, String authToken, ChessPosition start) throws DataAccessException, IOException {
-        ChessGame game;
-        game = gameService.getGame(gameID).game();
-        String message = game.findHighlight(start);
-        var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.sendMessage(gameID, authToken, notification);
+        try {
+            ChessGame game;
+            game = gameService.getGame(gameID).game();
+            String message = game.findHighlight(start);
+            var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.sendMessage(gameID, authToken, notification);
+        }catch (IOException | DataAccessException ex){
+            String errorMessage = ex.getMessage();
+            var notification = new Error(ServerMessage.ServerMessageType.ERROR, errorMessage);
+            connections.sendMessage(gameID, authToken, notification);
+        }
     }
 
 }
