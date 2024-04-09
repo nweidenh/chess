@@ -17,4 +17,8 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
     public GameData updateBoard(ChessGame newGame) {
         return new GameData(gameID, whiteUsername, blackUsername, gameName, newGame);
     }
+
+    public GameData endGame(ChessGame endedGame){
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, endedGame);
+    }
 }

@@ -59,18 +59,26 @@ public class GameService {
         gameDataAccess.updateGame(replacingGameData);
     }
 
+    public void finishGame (int gameID) throws DataAccessException {
+        GameData gameToEnd = gameDataAccess.getGame(gameID);
+        ChessGame endedGame = gameToEnd.game();
+        endedGame.setTeamTurn(null);
+        gameDataAccess.updateGame(gameToEnd.endGame(endedGame));
+    }
+
     public GameData getGame(int gameID) throws DataAccessException {
         return gameDataAccess.getGame(gameID);
     }
 
     public void leaveGame(int gameID, ChessGame.TeamColor teamColor) throws DataAccessException {
-        GameData leftGame = null;
+        GameData leftGame;
         if (teamColor == ChessGame.TeamColor.WHITE){
             leftGame = gameDataAccess.getGame(gameID).changeWhiteUsername(null);
+            gameDataAccess.updateGame(leftGame);
         } else if (teamColor == ChessGame.TeamColor.BLACK) {
             leftGame = gameDataAccess.getGame(gameID).changeBlackUsername(null);
+            gameDataAccess.updateGame(leftGame);
         }
-        gameDataAccess.updateGame(leftGame);
     }
 
     public void deleteAll()throws DataAccessException{

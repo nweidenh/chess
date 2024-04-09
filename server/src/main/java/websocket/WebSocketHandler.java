@@ -134,13 +134,15 @@ public class WebSocketHandler {
             username = authService.getAuth(authToken).username();
             if (!Objects.equals(gameService.getGame(gameID).blackUsername(), username) && !Objects.equals(gameService.getGame(gameID).whiteUsername(), username)) {
                 throw new DataAccessException(500, "Cannot resign as observer");
-            }
+            } if (gameService.getGame(gameID).game().getTeamTurn() == null){
+                throw new InvalidMoveException("The game is already over");
+            } gameService.finishGame(gameID);
             var message = String.format("%s resigned from the game", username);
             var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var userNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "You resigned from the game");
             connections.broadcast(gameID, authToken, notification);
             connections.sendMessage(gameID, authToken, userNotification);
-        } catch (IOException | DataAccessException ex){
+        } catch (IOException | DataAccessException | InvalidMoveException ex){
             connections.sendMessage(gameID, authToken, new Error(ServerMessage.ServerMessageType.ERROR, ex.getMessage()));
         }
     }
@@ -161,6 +163,8 @@ public class WebSocketHandler {
             game = gameService.getGame(gameID).game();
             if (game.getBoard().getPiece(move.getStartPosition()).getTeamColor() != teamColor){
                 throw new InvalidMoveException("That isn't your piece");
+            } else if (game.getTeamTurn() == null){
+                throw new InvalidMoveException("The game is over. No more moves can be made");
             }
             game.makeMove(move);
             char column = convertToLetter(move.getStartPosition().getColumn());
@@ -172,9 +176,48 @@ public class WebSocketHandler {
             var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
             connections.broadcast(gameID, authToken, notification);
             connections.broadcastGame(gameID, null, loadGame);
+            if (game.isInCheck(ChessGame.TeamColor.WHITE)){
+                String inCheckUser = gameService.getGame(gameID).whiteUsername();
+                check(gameID, inCheckUser, ChessGame.TeamColor.WHITE);
+            } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                String inCheckUser = gameService.getGame(gameID).whiteUsername();
+                check(gameID, inCheckUser, ChessGame.TeamColor.BLACK);
+            } if (game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                String inCheckmateUser = gameService.getGame(gameID).whiteUsername();
+                checkMate(gameID, inCheckmateUser, ChessGame.TeamColor.WHITE);
+            } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                String inCheckmateUser = gameService.getGame(gameID).whiteUsername();
+                checkMate(gameID, inCheckmateUser, ChessGame.TeamColor.BLACK);
+            } if (game.isInStalemate(ChessGame.TeamColor.WHITE)){
+                String inStalemateUser = gameService.getGame(gameID).whiteUsername();
+                staleMate(gameID, inStalemateUser, ChessGame.TeamColor.WHITE);
+            } else if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                String inStaleMateUser = gameService.getGame(gameID).whiteUsername();
+                staleMate(gameID, inStaleMateUser, ChessGame.TeamColor.BLACK);
+            }
         } catch (InvalidMoveException | IOException | DataAccessException ex){
             connections.sendMessage(gameID, authToken, new Error(ServerMessage.ServerMessageType.ERROR, ex.getMessage()));
         }
+    }
+
+    private void check(int gameID, String username, ChessGame.TeamColor pColor) throws IOException {
+        var message = String.format("The %s player is in check, username: %s. This player must make a move to avoid checkmate.", pColor.toString(), username);
+        connections.broadcast(gameID, null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message));
+    }
+
+    private void checkMate(int gameID, String username, ChessGame.TeamColor pColor) throws IOException, DataAccessException {
+        String winner = ChessGame.TeamColor.WHITE.toString();
+        if (pColor == ChessGame.TeamColor.WHITE){
+            winner = ChessGame.TeamColor.BLACK.toString();
+        } gameService.finishGame(gameID);
+        var message = String.format("The %s player is in checkmate, username: %s. The %s player wins the game!\nNo more moves can be made. Thank you for playing.", pColor.toString(), username, winner);
+        connections.broadcast(gameID, null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message));
+    }
+
+    private void staleMate(int gameID, String username, ChessGame.TeamColor pColor) throws IOException, DataAccessException {
+        gameService.finishGame(gameID);
+        var message = String.format("The %s player is in stalemate, username: %s. The game is over as no more moves can be made. Thank you for playing.", pColor.toString(), username);
+        connections.broadcast(gameID, null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message));
     }
 
     private char convertToLetter(int col){
