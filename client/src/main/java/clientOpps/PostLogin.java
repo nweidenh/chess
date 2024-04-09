@@ -1,12 +1,12 @@
 package clientOpps;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
 import model.GameData;
 import model.JoinGameRequest;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class PostLogin {
                 case "observe" -> observeGame(params);
                 default -> help();
             };
-        } catch (ResponseException | DataAccessException ex) {
+        } catch (ResponseException | IOException ex) {
             return ex.getMessage();
         }
     }
@@ -75,7 +75,7 @@ public class PostLogin {
         throw new ResponseException(400, "Expected: <NAME>");
     }
 
-    public String joinGame(String... params) throws ResponseException, DataAccessException {
+    public String joinGame(String... params) throws ResponseException, IOException {
         if (params.length == 2) {
             GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
             JoinGameRequest gameToJoin = new JoinGameRequest(params[1], joiningThisGame.gameID());
@@ -91,7 +91,7 @@ public class PostLogin {
         throw new ResponseException(400, "Expected: game number and a desired color");
     }
 
-    public String observeGame(String... params) throws ResponseException, DataAccessException {
+    public String observeGame(String... params) throws ResponseException, IOException {
         if (params.length == 1){
             GameData joiningThisGame = gamesListed.get(Integer.parseInt(params[0]));
             JoinGameRequest gameToJoin = new JoinGameRequest(null, joiningThisGame.gameID());

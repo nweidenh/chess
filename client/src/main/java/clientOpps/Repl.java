@@ -16,7 +16,7 @@ public class Repl implements NotificationHandler{
     private final PostLogin postClient;
     private final GameUi webSocket;
 
-    public Repl(String serverUrl) throws DataAccessException {
+    public Repl(String serverUrl) {
         preClient = new PreLogin(serverUrl);
         postClient = new PostLogin(serverUrl, this);
         webSocket = new GameUi(serverUrl, this);
