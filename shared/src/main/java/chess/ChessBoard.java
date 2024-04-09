@@ -101,43 +101,49 @@ public class ChessBoard {
         for(int col = 0; col < boardSquares.length; col++) {
             retString = retString + rowNum + " |";
             for (int row = 0; row < boardSquares.length; row++) {
-                if (boardSquares[col][row] == null){
-                    retString += "\u2001\u2005\u200A|";
-                }else if(boardSquares[col][row].getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
-                        retString += EscapeSequences2.WHITE_PAWN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
-                        retString += EscapeSequences2.WHITE_QUEEN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
-                        retString += EscapeSequences2.WHITE_KING + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                        retString += EscapeSequences2.WHITE_KNIGHT + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
-                        retString += EscapeSequences2.WHITE_ROOK + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
-                        retString += EscapeSequences2.WHITE_BISHOP + "|";
-                    }
-                }else{
-                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
-                        retString += EscapeSequences2.BLACK_PAWN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
-                        retString += EscapeSequences2.BLACK_QUEEN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
-                        retString += EscapeSequences2.BLACK_KING + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                        retString += EscapeSequences2.BLACK_KNIGHT + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
-                        retString += EscapeSequences2.BLACK_ROOK + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
-                        retString += EscapeSequences2.BLACK_BISHOP + "|";
-                    }
-                }
+                retString = getString(retString, col, row);
             }
             retString = retString + " " + rowNum + "\n";
             rowNum += 1;
         } retString += " \u2001\u2005\u200Aa\u2001\u2005\u200Ab\u2001\u2005\u200Ac\u2001\u2005\u200Ad\u2001\u2005\u200Ae\u2001\u2005\u200Af\u2001\u2005\u200Ag\u2001\u2005\u200Ah\u2001\u2005\u200A";;
         return retString;
     }
+
+    private String getString(String retString, int col, int row) {
+        if (boardSquares[col][row] == null){
+            retString += "\u2001\u2005\u200A|";
+        }else if(boardSquares[col][row].getTeamColor() == ChessGame.TeamColor.WHITE) {
+            if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                retString += EscapeSequences2.WHITE_PAWN + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                retString += EscapeSequences2.WHITE_QUEEN + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                retString += EscapeSequences2.WHITE_KING + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                retString += EscapeSequences2.WHITE_KNIGHT + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                retString += EscapeSequences2.WHITE_ROOK + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                retString += EscapeSequences2.WHITE_BISHOP + "|";
+            }
+        }else{
+            if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
+                retString += EscapeSequences2.BLACK_PAWN + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
+                retString += EscapeSequences2.BLACK_QUEEN + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
+                retString += EscapeSequences2.BLACK_KING + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                retString += EscapeSequences2.BLACK_KNIGHT + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
+                retString += EscapeSequences2.BLACK_ROOK + "|";
+            } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
+                retString += EscapeSequences2.BLACK_BISHOP + "|";
+            }
+        }
+        return retString;
+    }
+
     public String toStringFlipped(){
         System.out.println(EscapeSequences2.SET_BG_COLOR_BLACK);
         String retString = "";
@@ -146,37 +152,7 @@ public class ChessBoard {
         for(int col = boardSquares.length - 1; col > -1; col--) {
             retString = retString + rowNum + " |";
             for (int row = boardSquares.length - 1; row > -1; row--) {
-                if (boardSquares[col][row] == null){
-                    retString += "\u2001\u2005\u200A|";
-                }else if(boardSquares[col][row].getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
-                        retString += EscapeSequences2.WHITE_PAWN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
-                        retString += EscapeSequences2.WHITE_QUEEN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
-                        retString += EscapeSequences2.WHITE_KING + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                        retString += EscapeSequences2.WHITE_KNIGHT + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
-                        retString += EscapeSequences2.WHITE_ROOK + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
-                        retString += EscapeSequences2.WHITE_BISHOP + "|";
-                    }
-                }else{
-                    if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.PAWN) {
-                        retString += EscapeSequences2.BLACK_PAWN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.QUEEN) {
-                        retString += EscapeSequences2.BLACK_QUEEN + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KING) {
-                        retString += EscapeSequences2.BLACK_KING + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                        retString += EscapeSequences2.BLACK_KNIGHT + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.ROOK) {
-                        retString += EscapeSequences2.BLACK_ROOK + "|";
-                    } else if (boardSquares[col][row].getPieceType() == ChessPiece.PieceType.BISHOP) {
-                        retString += EscapeSequences2.BLACK_BISHOP + "|";
-                    }
-                }
+                retString = getString(retString, col, row);
             }
             retString = retString + " " + rowNum + "\n";
             rowNum -= 1;

@@ -175,7 +175,7 @@ public class WebSocketHandler {
             var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
             connections.broadcast(gameID, authToken, notification);
-            connections.broadcastGame(gameID, null, loadGame);
+            connections.broadcast(gameID, null, loadGame);
             if (game.isInCheckmate(ChessGame.TeamColor.WHITE)){
                 String inCheckmateUser = gameService.getGame(gameID).whiteUsername();
                 checkMate(gameID, inCheckmateUser, ChessGame.TeamColor.WHITE);
