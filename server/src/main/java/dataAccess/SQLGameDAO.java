@@ -23,7 +23,7 @@ public class SQLGameDAO  implements GameDAO{
         chessToInsert.setTeamTurn(ChessGame.TeamColor.WHITE);
         GameData createdGame = new GameData(0, null, null, gameName, chessToInsert);
         var json = new Gson().toJson(createdGame);
-        var newID = SQLUserDAO.executeUpdate(statement, createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
+        int newID = SQLUserDAO.executeUpdate(statement, createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
         return createdGame.changeGameID(newID);
     }
 
@@ -74,7 +74,7 @@ public class SQLGameDAO  implements GameDAO{
     };
 
     private GameData readGame(ResultSet rs) throws SQLException {
-        var id = rs.getInt("gameID");
+        int id = rs.getInt("gameID");
         var json = rs.getString("json");
         var game = new Gson().fromJson(json, GameData.class);
         return game.changeGameID(id);
