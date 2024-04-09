@@ -1,11 +1,8 @@
 package websocket;
 
-import chess.ChessBoard;
-import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import model.JoinGameRequest;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
@@ -24,7 +21,7 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws DataAccessException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler){
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
@@ -60,34 +57,34 @@ public class WebSocketFacade extends Endpoint {
         System.out.println("WebSocket connection established.");
     }
 
-    public void joinGame(JoinGameRequest gameToJoin, String authToken) throws DataAccessException {
+    public void joinGame(JoinGameRequest gameToJoin, String authToken) throws IOException {
         try {
             var playerToJoin = new JoinPlayer(authToken, gameToJoin.gameID(), gameToJoin.getTeamColor());
             this.session.getBasicRemote().sendText(new Gson().toJson(playerToJoin));
         } catch (IOException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new IOException(ex.getMessage());
         }
     }
 
-    public void joinObvGame(JoinGameRequest gameToJoin, String authToken) throws DataAccessException {
+    public void joinObvGame(JoinGameRequest gameToJoin, String authToken) throws IOException {
         try {
             var playerToJoin = new JoinObserver(authToken, gameToJoin.gameID());
             this.session.getBasicRemote().sendText(new Gson().toJson(playerToJoin));
         } catch (IOException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new IOException(ex.getMessage());
         }
     }
 
-    public void makeMove(int gameID, String authToken, ChessMove moveToMake) throws DataAccessException {
+    public void makeMove(int gameID, String authToken, ChessMove moveToMake) throws IOException {
         try {
             var moveMake = new MakeMove(authToken, gameID, moveToMake);
             this.session.getBasicRemote().sendText(new Gson().toJson(moveMake));
         } catch (IOException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new IOException(ex.getMessage());
         }
     }
 
-    public void redrawBoard(Integer gameID, String authToken) throws DataAccessException, IOException {
+    public void redrawBoard(Integer gameID, String authToken) throws IOException {
         var boardToDraw = new Redraw(authToken, gameID);
         this.session.getBasicRemote().sendText(new Gson().toJson(boardToDraw));
     }
@@ -97,22 +94,22 @@ public class WebSocketFacade extends Endpoint {
         this.session.getBasicRemote().sendText(new Gson().toJson(boardToHighlight));
     }
 
-    public void leaveGame(Integer gameID, String authToken) throws DataAccessException {
+    public void leaveGame(Integer gameID, String authToken) throws IOException {
         try {
             var leaveGame = new Leave(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(leaveGame));
             this.session.close();
         } catch (IOException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new IOException(ex.getMessage());
         }
     }
 
-    public void resignGame(Integer gameID, String authToken) throws DataAccessException {
+    public void resignGame(Integer gameID, String authToken) throws IOException {
         try {
             var resign = new Resign(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(resign));
         } catch (IOException ex) {
-            throw new DataAccessException(500, ex.getMessage());
+            throw new IOException(ex.getMessage());
         }
     }
 

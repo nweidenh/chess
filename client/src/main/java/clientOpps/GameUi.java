@@ -1,7 +1,6 @@
 package clientOpps;
 
 import chess.*;
-import dataAccess.DataAccessException;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
@@ -17,11 +16,10 @@ public class GameUi {
     public Integer gameID = null;
     Scanner scanner;
 
-    public GameUi(String serverUrl, NotificationHandler notificationHandler) throws DataAccessException {
+    public GameUi(String serverUrl, NotificationHandler notificationHandler) {
         ws = new WebSocketFacade(serverUrl, notificationHandler);
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
-
         this.scanner = new Scanner(System.in);
     }
 
@@ -38,24 +36,24 @@ public class GameUi {
                 case "highlight" -> highlightMoves(params);
                 default -> help();
             };
-        } catch (DataAccessException | ResponseException ex) {
+        } catch (ResponseException ex) {
             return ex.getMessage();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String redrawGame() throws ResponseException, DataAccessException, IOException {
+    public String redrawGame() throws ResponseException, IOException {
         ws.redrawBoard(gameID, authToken);
         return "";
     }
 
-    public String leaveGame() throws DataAccessException {
+    public String leaveGame() throws IOException {
         ws.leaveGame(gameID, authToken);
         return "You left the game";
     }
 
-    public String makeMove(String... params) throws DataAccessException {
+    public String makeMove(String... params) throws IOException {
         int row = 0;
         int col = 0;
         System.out.println("Enter the space of the piece you want to move in this format: rowNumber columnLetter (ex 7 a)");
@@ -76,7 +74,7 @@ public class GameUi {
         return new ChessPosition(row, col);
     }
 
-    public String resign() throws DataAccessException {
+    public String resign() throws IOException {
         System.out.println("Are you sure you want to resign? (yes or no)");
         String decision = scanner.nextLine();
         if(decision.equalsIgnoreCase("yes")){
