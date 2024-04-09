@@ -116,7 +116,7 @@ public class WebSocketHandler {
             connections.add(gameID, authToken, session);
             username = authService.getAuth(authToken).username();
             game = gameService.getGame(gameID).game();
-            var message = String.format("%s joined the game", username);
+            var message = String.format("%s is watching the game as an observer", username);
             var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
             connections.broadcast(gameID, authToken, notification);
@@ -176,19 +176,19 @@ public class WebSocketHandler {
             var loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, game);
             connections.broadcast(gameID, authToken, notification);
             connections.broadcastGame(gameID, null, loadGame);
-            if (game.isInCheck(ChessGame.TeamColor.WHITE)){
-                String inCheckUser = gameService.getGame(gameID).whiteUsername();
-                check(gameID, inCheckUser, ChessGame.TeamColor.WHITE);
-            } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
-                String inCheckUser = gameService.getGame(gameID).whiteUsername();
-                check(gameID, inCheckUser, ChessGame.TeamColor.BLACK);
-            } if (game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+            if (game.isInCheckmate(ChessGame.TeamColor.WHITE)){
                 String inCheckmateUser = gameService.getGame(gameID).whiteUsername();
                 checkMate(gameID, inCheckmateUser, ChessGame.TeamColor.WHITE);
             } else if (game.isInCheckmate(ChessGame.TeamColor.BLACK)) {
                 String inCheckmateUser = gameService.getGame(gameID).whiteUsername();
                 checkMate(gameID, inCheckmateUser, ChessGame.TeamColor.BLACK);
-            } if (game.isInStalemate(ChessGame.TeamColor.WHITE)){
+            }if (game.isInCheck(ChessGame.TeamColor.WHITE)){
+                String inCheckUser = gameService.getGame(gameID).whiteUsername();
+                check(gameID, inCheckUser, ChessGame.TeamColor.WHITE);
+            } else if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                String inCheckUser = gameService.getGame(gameID).whiteUsername();
+                check(gameID, inCheckUser, ChessGame.TeamColor.BLACK);
+            } else if (game.isInStalemate(ChessGame.TeamColor.WHITE)){
                 String inStalemateUser = gameService.getGame(gameID).whiteUsername();
                 staleMate(gameID, inStalemateUser, ChessGame.TeamColor.WHITE);
             } else if (game.isInStalemate(ChessGame.TeamColor.BLACK)) {
