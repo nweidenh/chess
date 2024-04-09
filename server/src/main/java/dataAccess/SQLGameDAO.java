@@ -15,6 +15,7 @@ import java.sql.*;
 public class SQLGameDAO  implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException{
+        configureDatabase();
     }
     public GameData createGame (String gameName) throws DataAccessException{
         var statement = "INSERT INTO Games (whiteUsername, blackUsername, gameName, game, json) VALUES (?, ?, ?, ?, ?)";
@@ -79,5 +80,53 @@ public class SQLGameDAO  implements GameDAO{
         var game = new Gson().fromJson(json, GameData.class);
         return game.changeGameID(id);
     }
+
+    private void configureDatabase() throws DataAccessException {
+        configData(createStatements);
+    }
+
+    static void configData(String[] createStatements) throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(500, ex.getMessage());
+        }
+    }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS Users  (
+              username varchar(256) NOT NULL,
+              password varchar(256) NOT NULL,
+              email varchar(256) NOT NULL,
+              json TEXT DEFAULT NULL,
+              PRIMARY KEY (username),
+              INDEX(password),
+              INDEX(email)
+            )""", """
+            CREATE TABLE IF NOT EXISTS Games  (
+              gameID int NOT NULL,
+              whiteUsername varchar(256),
+              blackUsername varchar(256),
+              gameName varchar(256) NOT NULL,
+              game longtext,
+              json TEXT DEFAULT NULL,
+              PRIMARY KEY (gameID),
+              INDEX(gameName)
+            )""", """
+            CREATE TABLE IF NOT EXISTS Auths  (
+              authToken varchar(256) NOT NULL,
+              username varchar(256) NOT NULL,
+              json TEXT DEFAULT NULL,
+              PRIMARY KEY (authToken),
+              INDEX(username)
+            )
+            """
+    };
 
 }
