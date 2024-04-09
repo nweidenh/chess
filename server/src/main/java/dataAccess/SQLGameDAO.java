@@ -23,7 +23,7 @@ public class SQLGameDAO  implements GameDAO{
         chessToInsert.setTeamTurn(ChessGame.TeamColor.WHITE);
         GameData createdGame = new GameData(0, null, null, gameName, chessToInsert);
         var json = new Gson().toJson(createdGame);
-        var newID = SQLUserDAO.executeUpdate(statement, createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
+        var newID = executeUpdate(statement, createdGame.whiteUsername(), createdGame.blackUsername(), createdGame.gameName(), new ChessGame(), json);
         return createdGame.changeGameID(newID);
     }
 
@@ -65,12 +65,12 @@ public class SQLGameDAO  implements GameDAO{
     public void updateGame(GameData game) throws DataAccessException{
         var statement = "UPDATE Games SET whiteUsername=?, blackUsername=?, gameName=?, game=?, json=? WHERE gameID=?";
         var json = new Gson().toJson(game);
-        SQLUserDAO.executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), json, game.gameID());
+        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), json, game.gameID());
     };
 
     public void deleteAllGames () throws DataAccessException{
         var statement = "TRUNCATE Games";
-        SQLUserDAO.executeUpdate(statement);
+        executeUpdate(statement);
     };
 
     private GameData readGame(ResultSet rs) throws SQLException {
@@ -80,4 +80,28 @@ public class SQLGameDAO  implements GameDAO{
         return game.changeGameID(id);
     }
 
+    static int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    else if (param instanceof ChessGame p) ps.setString(i + 1, p.toString());
+                    else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    int myInt = rs.getInt(1);
+                    return myInt;
+                }
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
 }
