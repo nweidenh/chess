@@ -15,7 +15,6 @@ import java.sql.*;
 public class SQLGameDAO  implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException{
-        configureDatabase();
     }
     public GameData createGame (String gameName) throws DataAccessException{
         var statement = "INSERT INTO Games (whiteUsername, blackUsername, gameName, game, json) VALUES (?, ?, ?, ?, ?)";
@@ -81,38 +80,4 @@ public class SQLGameDAO  implements GameDAO{
         return game.changeGameID(id);
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS Users  (
-              username varchar(256) NOT NULL,
-              password varchar(256) NOT NULL,
-              email varchar(256) NOT NULL,
-              json TEXT DEFAULT NULL,
-              PRIMARY KEY (username),
-              INDEX(password),
-              INDEX(email)
-            )""", """
-            CREATE TABLE IF NOT EXISTS Games  (
-              gameID int not null,
-              whiteUsername varchar(256),
-              blackUsername varchar(256),
-              gameName varchar(256) NOT NULL,
-              game longtext,
-              json TEXT DEFAULT NULL,
-              PRIMARY KEY (gameID)
-            )""", """
-            CREATE TABLE IF NOT EXISTS Auths  (
-              authToken varchar(256) NOT NULL,
-              username varchar(256) NOT NULL,
-              json TEXT DEFAULT NULL,
-              PRIMARY KEY (authToken),
-              INDEX(username)
-            )
-            """, """
-            ALTER TABLE Games MODIFY gameID int NOT NULL AUTO_INCREMENT"""
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        SQLUserDAO.configData(createStatements);
-    }
 }

@@ -144,22 +144,6 @@ public class ChessBoard {
         return retString;
     }
 
-    public String toStringFlipped(){
-        System.out.println(EscapeSequences2.SET_BG_COLOR_BLACK);
-        String retString = "";
-        retString += "\n \u2001\u2005\u200Ah\u2001\u2005\u200Ag\u2001\u2005\u200Af\u2001\u2005\u200Ae\u2001\u2005\u200Ad\u2001\u2005\u200Ac\u2001\u2005\u200Ab\u2001\u2005\u200Aa\u2001\u2005\u200A\n";
-        int rowNum = 8;
-        for(int col = boardSquares.length - 1; col > -1; col--) {
-            retString = retString + rowNum + " |";
-            for (int row = boardSquares.length - 1; row > -1; row--) {
-                retString = getString(retString, col, row);
-            }
-            retString = retString + " " + rowNum + "\n";
-            rowNum -= 1;
-        } retString += " \u2001\u2005\u200Ah\u2001\u2005\u200Ag\u2001\u2005\u200Af\u2001\u2005\u200Ae\u2001\u2005\u200Ad\u2001\u2005\u200Ac\u2001\u2005\u200Ab\u2001\u2005\u200Aa\u2001\u2005\u200A";;
-        return retString;
-    }
-
     public String highlightSpaces(ArrayList<ChessPosition> toBeHighlighted){
         System.out.println(EscapeSequences2.SET_BG_COLOR_BLACK);
         String retString = "";
