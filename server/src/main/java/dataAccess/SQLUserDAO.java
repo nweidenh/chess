@@ -101,7 +101,8 @@ public class SQLUserDAO  implements UserDAO{
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    int myInt = rs.getInt(1);
+                    return myInt;
                 }
 
                 return 0;
