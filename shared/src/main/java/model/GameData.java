@@ -1,7 +1,7 @@
 package model;
 import chess.ChessGame;
 
-public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
+public record GameData(Integer gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
     public GameData changeWhiteUsername(String newName) {
         return new GameData(gameID, newName, blackUsername, gameName, game);
     }
@@ -10,7 +10,7 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
         return new GameData(gameID, whiteUsername, newName, gameName, game);
     }
 
-    public GameData changeGameID(int newGameID){
+    public GameData changeGameID(Integer newGameID){
         return new GameData(newGameID, whiteUsername, blackUsername, gameName, game);
     }
 

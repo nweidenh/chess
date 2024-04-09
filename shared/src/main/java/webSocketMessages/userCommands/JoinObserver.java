@@ -12,7 +12,7 @@ public class JoinObserver extends  UserGameCommand{
         this.gameID = gameID;
     }
 
-    public Integer getGameID() {
+    public int getGameID() {
         return gameID;
     }
 }
