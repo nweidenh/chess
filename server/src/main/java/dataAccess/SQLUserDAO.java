@@ -132,15 +132,15 @@ public class SQLUserDAO  implements UserDAO{
               json TEXT DEFAULT NULL,
               PRIMARY KEY (gameID),
               INDEX(gameName)
-            )""", """
+            )""","""
             CREATE TABLE IF NOT EXISTS Auths  (
               authToken varchar(256) NOT NULL,
               username varchar(256) NOT NULL,
               json TEXT DEFAULT NULL,
               PRIMARY KEY (authToken),
               INDEX(username)
-            )
-            """
+            )""", """
+            ALTER TABLE Games MODIFY gameID INT(0) AUTO_INCREMENT"""
     };
 
     private void configureDatabase() throws DataAccessException {
