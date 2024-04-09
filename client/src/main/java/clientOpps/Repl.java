@@ -2,7 +2,6 @@ package clientOpps;
 
 import static ui2.EscapeSequences2.*;
 
-import dataAccess.DataAccessException;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.Error;
