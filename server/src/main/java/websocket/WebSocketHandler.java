@@ -266,7 +266,7 @@ public class WebSocketHandler {
             String message = game.findHighlight(start);
             var notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.sendMessage(gameID, authToken, notification);
-        }catch (IOException | DataAccessException ex){
+        }catch (IOException | DataAccessException | InvalidMoveException ex){
             String errorMessage = ex.getMessage();
             var notification = new Error(ServerMessage.ServerMessageType.ERROR, errorMessage);
             connections.sendMessage(gameID, authToken, notification);

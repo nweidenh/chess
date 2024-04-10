@@ -70,16 +70,18 @@ public class ChessGame {
         return verifiedMoves;
     }
 
-    public String findHighlight(ChessPosition startPosition){
-        Collection<ChessMove> lstOfMoves = validMoves(startPosition);
-        ChessPosition potentialSpace;
-        ArrayList<ChessPosition> lstToHighlight = new ArrayList<>();
-        lstToHighlight.add(startPosition);
-        for (ChessMove move : lstOfMoves){
-            potentialSpace = move.getEndPosition();
-            lstToHighlight.add(potentialSpace);
-        }
-        return board.highlightSpaces(lstToHighlight);
+    public String findHighlight(ChessPosition startPosition) throws InvalidMoveException {
+        if(board.getPiece(startPosition).getTeamColor() == this.getTeamTurn()) {
+            Collection<ChessMove> lstOfMoves = validMoves(startPosition);
+            ChessPosition potentialSpace;
+            ArrayList<ChessPosition> lstToHighlight = new ArrayList<>();
+            lstToHighlight.add(startPosition);
+            for (ChessMove move : lstOfMoves) {
+                potentialSpace = move.getEndPosition();
+                lstToHighlight.add(potentialSpace);
+            }
+            return board.highlightSpaces(lstToHighlight);
+        }else {throw new InvalidMoveException("attempted highlight is on wrong team");}
     }
 
     /**

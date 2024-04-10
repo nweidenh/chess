@@ -99,6 +99,7 @@ public class PostLogin {
             ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.joinObvGame(gameToJoin, authToken);
             inWs = true;
+            gameID = joiningThisGame.gameID();
             return "You are observing game " + params[0]; //+ "\nThis is the current state of the game" + joiningThisGame.game().getBoard().toString() + "\nand flipped it is" + joiningThisGame.game().getBoard().toStringFlipped();
         }
         throw new ResponseException(400, "Expected: game number");
